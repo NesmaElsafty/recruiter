@@ -45,6 +45,107 @@ class UserController extends Controller
         }
     }
 
+    // blocklist
+    public function blocklist(Request $request)
+    {
+        try {
+            $users = $this->userService->blocklist($request->all())->paginate(10);
+            $stats = $this->userService->softDeletedStats();
+            
+            return response()->json([
+                'success' => true,
+                'data' => UserResource::collection($users),
+                'stats' => $stats,
+                'pagination' => PaginationHelper::paginate($users)
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to retrieve blocklist',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    // requests list
+    public function requestsList()
+    {
+        try {
+            $users = $this->userService->requestsList()->paginate(10);
+            return response()->json([
+                'success' => true,
+                'data' => UserResource::collection($users),
+                'pagination' => PaginationHelper::paginate($users)
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to retrieve requests list',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    // recruiter confirmation
+    public function recruiterConfirmation(Request $request)
+    {
+        try {
+            $request->validate([
+                'id' => 'required|exists:users,id',
+                'is_active' => 'required|boolean',
+            ]);
+        $user = $this->userService->recruiterConfirmation($request->all());
+        return response()->json([
+            'success' => true,
+            'data' => new UserResource($user)
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to retrieve recruiter confirmation',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    // accepted requests
+    public function acceptedRequests()
+    {
+        try {
+            $users = $this->userService->acceptedRequests()->paginate(10);
+            return response()->json([
+                'success' => true,
+                'data' => UserResource::collection($users),
+                'pagination' => PaginationHelper::paginate($users)
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to retrieve accepted requests',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    // soft deleted users stats
+    public function softDeletedStats()
+    {
+        try {
+            $stats = $this->userService->softDeletedStats();
+            
+            return response()->json([
+                'success' => true,
+                'data' => $stats
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to retrieve soft deleted user stats',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
     public function show($id)
     {
         try {
@@ -67,7 +168,8 @@ class UserController extends Controller
     {
         try {
             $request->validate([
-                'name' => 'required|string|max:255',
+                'fname' => 'required|string|max:255',
+                'lname' => 'required|string|max:255',
                 'email' => 'required|email|max:255|unique:users,email',
                 'type' => 'required|string|in:candidate,recruiter,admin',
                 'phone' => 'required|string|max:255|unique:users,phone',
@@ -139,11 +241,11 @@ class UserController extends Controller
                 'ids' => 'nullable|array',
                 'ids.*' => 'required|exists:users,id',
                 'type' => 'required|string|in:candidate,recruiter',
-                'action' => 'required|string|in:activationToggle,delete,unblock,block,export',
+                'action' => 'required|string|in:activationToggle,delete,unblock,block,export,RecruiterConfirmation',
             ]);
 
             $ids = [];
-            if(!empty($request->ids)) {
+            if(isset($request->ids)) {
                 $ids = $request->ids;
             }else{
                 $ids = User::where('type', $request->type)->pluck('id')->toArray();
@@ -158,12 +260,15 @@ class UserController extends Controller
                     break;
                 case 'unblock':
                     $result = $this->userService->unblock($ids);
-                    break;
+                    break;   
                 case 'block':
                     $result = $this->userService->block($ids);
                     break;
                 case 'export':
                     $result = $this->userService->export($ids, $request->type);
+                    break;
+                case 'recruiterConfirmation':
+                    $result = $this->userService->bulkRecruiterConfirmation($request->all());
                     break;
             }
             return response()->json([
@@ -184,18 +289,18 @@ class UserController extends Controller
     {
         try {
             $request->validate([
-                'avatar' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:2048'
+                'image' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:2048'
             ]);
 
             $user = $this->userService->getUserById($id);
             
             $user->clearMediaCollection('avatar');
-            $user->addMediaFromRequest('avatar')
+            $user->addMediaFromRequest('image')
                 ->toMediaCollection('avatar');
 
             return response()->json([
                 'success' => true,
-                'message' => 'Avatar uploaded successfully',
+                'message' => 'Image uploaded successfully',
                 'data' => [
                     'url' => $user->getFirstMediaUrl('avatar'),
                     'thumb' => $user->getFirstMediaUrl('avatar', 'thumb'),
@@ -205,7 +310,7 @@ class UserController extends Controller
         } catch (Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to upload avatar',
+                'message' => 'Failed to upload image',
                 'error' => $e->getMessage()
             ], 500);
         }
@@ -232,7 +337,7 @@ class UserController extends Controller
                     'name' => $user->getFirstMedia('resume')->name,
                     'size' => $user->getFirstMedia('resume')->size,
                 ]
-            ]);
+            ]);          
         } catch (Exception $e) {
             return response()->json([
                 'success' => false,

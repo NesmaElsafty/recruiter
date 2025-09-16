@@ -59,6 +59,12 @@ Route::middleware('auth:api')->group(function () {
         Route::put('users/{id}', [UserController::class, 'update']);
         Route::delete('users/{id}', [UserController::class, 'destroy']);
         Route::post('users/bulkActions', [UserController::class, 'bulkActions']);
+        Route::get('users/blocklist', [UserController::class, 'blocklist']);
+        Route::get('users/soft-deleted/stats', [UserController::class, 'softDeletedStats']);
+
+        Route::get('users/requestsList', [UserController::class, 'requestsList']);
+        Route::get('users/acceptedRequests', [UserController::class, 'acceptedRequests']);
+        Route::post('users/recruiterConfirmation', [UserController::class, 'recruiterConfirmation']);
     });
 
     // Recruiter routes

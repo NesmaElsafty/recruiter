@@ -22,7 +22,8 @@ class AuthController extends Controller
     {
         try {
             $request->validate([
-                'name' => 'required|string|max:255',
+                'fname' => 'required|string|max:255',
+                'lname' => 'required|string|max:255',
                 'email' => 'required|email|max:255|unique:users,email',
                 'type' => 'required|string|in:candidate,recruiter,admin',
                 'phone' => 'required|string|max:255|unique:users,phone',
@@ -30,7 +31,7 @@ class AuthController extends Controller
                 'major_id' => 'nullable|exists:majors,id',
                 'company_name' => 'nullable|string|max:255',
                 'job_title' => 'nullable|string|max:255',
-            ]);
+            ]);    
             $userData = $request->all();
             $userData['password'] = Hash::make($userData['password']);
             
@@ -110,7 +111,7 @@ class AuthController extends Controller
             $user = $request->user();
             $user->revokeToken();
 
-            return response()->json([
+            return response()->json([ 
                 'success' => true,
                 'message' => 'Logout successful'
             ]);

@@ -10,14 +10,15 @@ use App\Helpers\ExportHelper;
 class UserService
 {
 
+    // indexes
     public function getAllUsers($data)
     {
         $query = User::query();
-        $query->where('type', $data['type']);
+        $query->where('type', $data['type'])->whereNotNull('is_active');
 
         if(isset($data['search'])) {
-            $query->where('name_en', 'like', "%{$data['search']}%")
-                  ->orWhere('name_ar', 'like', "%{$data['search']}%")
+            $query->where('fname', 'like', "%{$data['search']}%")
+                  ->orWhere('lname', 'like', "%{$data['search']}%")
                   ->orWhere('email', 'like', "%{$data['search']}%")
                   ->orWhere('phone', 'like', "%{$data['search']}%")
                   ->orWhere('company_name', 'like', "%{$data['search']}%")
@@ -35,11 +36,11 @@ class UserService
 
         if(isset($data['sorted_by'])) {
             switch($data['sorted_by']) {
-                case 'name_en':
-                    $query->orderBy('name_en', 'asc');
+                case 'fname':
+                    $query->orderBy('fname', 'asc');
                     break;
-                case 'name_ar':
-                    $query->orderBy('name_ar', 'asc');
+                case 'lname':
+                    $query->orderBy('lname', 'asc');
                     break;
                 case 'major_en':
                     $query->orderBy('major.name_en', 'asc');
@@ -66,24 +67,37 @@ class UserService
         return $query;
     }
 
-    public function blocklist(string $phone)
+    public function blocklist($data)
     {
-        // get trashed users
-        $user = User::withTrashed();
-        
-        return false;
-    }
-
-    public function unblocklist(string $phone)
-    {
-        $user = User::where('phone', $phone)->withTrashed()->first();
-        if($user){
-            $user->delete();
-            return true;
+        // dd($data);
+        // get only soft-deleted users
+        $users = User::onlyTrashed();
+        if(isset($data['search'])) {
+            $users->where('fname', 'like', "%{$data['search']}%")
+                  ->orWhere('lname', 'like', "%{$data['search']}%")
+                  ->orWhere('email', 'like', "%{$data['search']}%")
+                  ->orWhere('phone', 'like', "%{$data['search']}%");
         }
+        return $users;
     }
 
-    public function getUserById(int $id)
+    // requests list
+    public function requestsList()
+    {
+        $users = User::where(['is_active'=> null, 'type'=> 'recruiter']);
+        return $users;
+    }
+
+    // accepted requests
+    public function acceptedRequests()
+    {
+        $users = User::where(['is_active'=> true, 'type'=> 'recruiter']);
+        return $users;
+    }
+
+
+    // CRUD
+    public function getUserById($id)
     {
         $user = User::find($id);
         
@@ -172,6 +186,57 @@ class UserService
         ];
     }
 
+    public function softDeletedStats()
+    {
+        // Get current counts for soft-deleted users
+        $totalSoftDeleted = User::onlyTrashed()->count();
+        $candidatesSoftDeleted = User::onlyTrashed()->where('type', 'candidate')->count();
+        $recruitersSoftDeleted = User::onlyTrashed()->where('type', 'recruiter')->count();
+
+        // Get previous month counts for percentage calculation
+        $previousMonth = now()->subMonth();
+        $totalSoftDeletedPrevious = User::onlyTrashed()
+            ->where('deleted_at', '<=', $previousMonth)
+            ->count();
+        $candidatesSoftDeletedPrevious = User::onlyTrashed()
+            ->where('type', 'candidate')
+            ->where('deleted_at', '<=', $previousMonth)
+            ->count();
+        $recruitersSoftDeletedPrevious = User::onlyTrashed()
+            ->where('type', 'recruiter')
+            ->where('deleted_at', '<=', $previousMonth)
+            ->count();
+
+        // Calculate percentage changes
+        $totalChange = $this->calculatePercentageChange($totalSoftDeletedPrevious, $totalSoftDeleted);
+        $candidatesChange = $this->calculatePercentageChange($candidatesSoftDeletedPrevious, $candidatesSoftDeleted);
+        $recruitersChange = $this->calculatePercentageChange($recruitersSoftDeletedPrevious, $recruitersSoftDeleted);
+
+        // Get monthly data for charts (last 12 months)
+        $monthlyData = $this->getSoftDeletedMonthlyData();
+
+        return [
+            'total_soft_deleted' => [
+                'count' => $totalSoftDeleted,
+                'change_percentage' => $totalChange['percentage'],
+                'change_direction' => $totalChange['direction'],
+                'monthly_data' => $monthlyData['total']
+            ],
+            'candidates_soft_deleted' => [
+                'count' => $candidatesSoftDeleted,
+                'change_percentage' => $candidatesChange['percentage'],
+                'change_direction' => $candidatesChange['direction'],
+                'monthly_data' => $monthlyData['candidates']
+            ],
+            'recruiters_soft_deleted' => [
+                'count' => $recruitersSoftDeleted,
+                'change_percentage' => $recruitersChange['percentage'],
+                'change_direction' => $recruitersChange['direction'],
+                'monthly_data' => $monthlyData['recruiters']
+            ],
+        ];
+    }
+
     private function calculatePercentageChange($previous, $current)
     {
         if ($previous == 0) {
@@ -186,6 +251,45 @@ class UserService
         return [
             'percentage' => round(abs($percentage), 2),
             'direction' => $percentage >= 0 ? 'up' : 'down'
+        ];
+    }
+
+    private function getSoftDeletedMonthlyData()
+    {
+        $months = [];
+        $totalData = [];
+        $candidatesData = [];
+        $recruitersData = [];
+
+        // Get data for last 12 months
+        for ($i = 11; $i >= 0; $i--) {
+            $date = now()->subMonths($i);
+            $endOfMonth = $date->copy()->endOfMonth();
+
+            $months[] = $date->format('M Y');
+
+            // Count soft-deleted users up to this month
+            $totalData[] = User::onlyTrashed()
+                ->where('deleted_at', '<=', $endOfMonth)
+                ->count();
+
+            $candidatesData[] = User::onlyTrashed()
+                ->where('type', 'candidate')
+                ->where('deleted_at', '<=', $endOfMonth)
+                ->count();
+
+            $recruitersData[] = User::onlyTrashed()
+                ->where('type', 'recruiter')
+                ->where('deleted_at', '<=', $endOfMonth)
+                ->count();
+
+        }
+
+        return [
+            'months' => $months,
+            'total' => $totalData,
+            'candidates' => $candidatesData,
+            'recruiters' => $recruitersData,
         ];
     }
 
@@ -226,6 +330,16 @@ class UserService
             'active' => $activeData,
             'banned' => $bannedData
         ];
+    }
+
+    // Actions
+
+    // recruiter confirmation
+    public function recruiterConfirmation($data){
+        $user = User::find($data['id']);
+        $user->is_active = $data['is_active'];
+        $user->save();
+        return $user;
     }
 
     // bulk actions
@@ -298,5 +412,13 @@ class UserService
         return $media->getFullUrl();
     }
 
+    public function bulkRecruiterConfirmation($data){
+        $users = User::whereIn('id', $data['ids'])->get();
+        foreach($users as $user){
+            $user->is_active = $data['is_active'];
+            $user->save();
+        }
+        return true;
+    }
 
 }

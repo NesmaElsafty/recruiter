@@ -23,7 +23,8 @@ class UserSeeder extends Seeder
         
         $users = [
             [
-                'name' => 'Ahmed Al-Rashid',
+                'fname' => 'Ahmed',
+                'lname' => 'Al-Rashid',
                 'email' => 'Admin@example.com',
                 'password' => Hash::make('123456'),
                 'phone' => '966555555555',
@@ -33,7 +34,8 @@ class UserSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
-                'name' => 'Sarah Johnson',
+                'fname' => 'Sarah',
+                'lname' => 'Johnson',
                 'email' => 'candidate@example.com',
                 'password' => Hash::make('123456'),
                 'phone' => '966555555551',
@@ -45,7 +47,8 @@ class UserSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
-                'name' => 'Mohammed Al-Sheikh',
+                'fname' => 'Mohammed',
+                'lname' => 'Al-Sheikh',
                 'email' => 'recruiter@example.com',
                 'password' => Hash::make('123456'),
                 'phone' => '966555555553',
@@ -57,7 +60,8 @@ class UserSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
-                'name' => 'Fatima Al-Zahra',
+                'fname' => 'Fatima',
+                'lname' => 'Al-Zahra',
                 'email' => 'fatima@example.com',
                 'password' => Hash::make('123456'),
                 'phone' => '966555555556',
@@ -69,7 +73,8 @@ class UserSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
-                'name' => 'David Wilson',
+                'fname' => 'David',
+                'lname' => 'Wilson',
                 'email' => 'david@example.com',
                 'password' => Hash::make('123456'),
                 'phone' => '966555555557',
@@ -83,7 +88,8 @@ class UserSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
-                'name' => 'John Doe',
+                'fname' => 'John',
+                'lname' => 'Doe',
                 'email' => 'john@example.com',
                 'password' => Hash::make('123456'),
                 'phone' => '966555555558',
@@ -93,7 +99,8 @@ class UserSeeder extends Seeder
                 'updated_at' => now(),
             ],      
             [
-                'name' => 'Jane Doe',
+                'fname' => 'Jane',
+                'lname' => 'Doe',
                 'email' => 'jane@example.com',
                 'password' => Hash::make('123456'),
                 'phone' => '966555555559',
@@ -107,7 +114,8 @@ class UserSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
-                'name' => 'Jane Doe',
+                'fname' => 'Jane',
+                'lname' => 'Doe',
                 'email' => 'janee@example.com',
                 'password' => Hash::make('123456'),
                 'phone' => '966555555510',

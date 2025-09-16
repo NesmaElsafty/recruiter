@@ -20,10 +20,8 @@ class CityController extends Controller
         $this->cityService = $cityService;
     }
 
-    /**
-     * Display a listing of the resource.
-     */
-    public function index(): JsonResponse
+
+    public function index()
     {
         try {
             $cities = $this->cityService->getAllCities();
@@ -40,10 +38,7 @@ class CityController extends Controller
         }
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request): JsonResponse
+    public function store(Request $request)
     {
         try {
             $request->validate([
@@ -73,10 +68,7 @@ class CityController extends Controller
         }
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id): JsonResponse
+    public function show(string $id)
     {
         try {
             $city = $this->cityService->getCityById((int)$id);
@@ -98,10 +90,7 @@ class CityController extends Controller
         }
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id): JsonResponse
+    public function update(Request $request, string $id)
     {
         try {
             $request->validate([
@@ -136,10 +125,7 @@ class CityController extends Controller
         }
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id): JsonResponse
+    public function destroy(string $id)
     {
         try {
             $this->cityService->deleteCity((int)$id);
@@ -161,10 +147,7 @@ class CityController extends Controller
         }
     }
 
-    /**
-     * Search cities by name
-     */
-    public function search(string $query): JsonResponse
+    public function search(string $query)
     {
         try {
             $cities = $this->cityService->searchCities($query);
