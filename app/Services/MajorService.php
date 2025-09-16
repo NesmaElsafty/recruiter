@@ -3,7 +3,6 @@
 namespace App\Services;
 
 use App\Models\Major;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\DB;
 
@@ -12,7 +11,7 @@ class MajorService
     /**
      * Get all majors
      */
-    public function getAllMajors(): Collection
+    public function getAllMajors()
     {
         return Major::all();
     }
@@ -67,7 +66,7 @@ class MajorService
     /**
      * Search majors by name
      */
-    public function searchMajors(string $query): Collection
+    public function searchMajors(string $query)
     {
         return Major::where('name_en', 'like', "%{$query}%")
                     ->orWhere('name_ar', 'like', "%{$query}%")

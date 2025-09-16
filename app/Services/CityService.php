@@ -3,7 +3,6 @@
 namespace App\Services;
 
 use App\Models\City;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\DB;
 
@@ -12,7 +11,7 @@ class CityService
     /**
      * Get all cities
      */
-    public function getAllCities(): Collection
+    public function getAllCities()
     {
         return City::all();
     }
@@ -67,7 +66,7 @@ class CityService
     /**
      * Search cities by name
      */
-    public function searchCities(string $query): Collection
+    public function searchCities(string $query)
     {
         return City::where('name_en', 'like', "%{$query}%")
                    ->orWhere('name_ar', 'like', "%{$query}%")

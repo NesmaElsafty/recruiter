@@ -18,12 +18,21 @@ class AuthController extends Controller
     /**
      * Register a new user
      */
-    public function register(RegisterRequest $request)
+    public function register(Request $request)
     {
         try {
-            $userData = $request->validated();
+            $request->validate([
+                'name' => 'required|string|max:255',
+                'email' => 'required|email|max:255|unique:users,email',
+                'type' => 'required|string|in:candidate,recruiter,admin',
+                'phone' => 'required|string|max:255|unique:users,phone',
+                'city_id' => 'nullable|exists:cities,id',
+                'major_id' => 'nullable|exists:majors,id',
+                'company_name' => 'nullable|string|max:255',
+                'job_title' => 'nullable|string|max:255',
+            ]);
+            $userData = $request->all();
             $userData['password'] = Hash::make($userData['password']);
-
             
             $user = User::create($userData);
             $token = $user->createToken('auth-token');

@@ -10,4 +10,9 @@ class Major extends Model
         'name_en',
         'name_ar',
     ];
+
+    public function users()
+    {
+        return $this->hasMany(User::class);
+    }
 }

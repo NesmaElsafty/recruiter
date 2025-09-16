@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CityController;
 use App\Http\Controllers\MajorController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -31,6 +32,15 @@ Route::get('majors/{major}', [MajorController::class, 'show']);
 Route::get('majors/search/{query}', [MajorController::class, 'search']);
 
 
+// Media upload routes
+Route::post('users/{id}/avatar', [UserController::class, 'uploadAvatar']);
+Route::post('users/{id}/resume', [UserController::class, 'uploadResume']);
+Route::post('users/{id}/documents', [UserController::class, 'uploadDocuments']);
+Route::delete('users/{id}/media/{mediaId}', [UserController::class, 'deleteMedia']);
+
+Route::get('users', [UserController::class, 'index']);
+Route::get('users/{id}', [UserController::class, 'show']);
+
 // Protected routes (require authentication)
 Route::middleware('auth:api')->group(function () {
     // General Auth routes
@@ -44,6 +54,11 @@ Route::middleware('auth:api')->group(function () {
     Route::prefix('admin')->group(function () {
         Route::apiResource('cities', CityController::class)->except(['show', 'index']);
         Route::apiResource('majors', MajorController::class)->except(['show', 'index']);
+    // User routes
+        Route::post('users', [UserController::class, 'store']);
+        Route::put('users/{id}', [UserController::class, 'update']);
+        Route::delete('users/{id}', [UserController::class, 'destroy']);
+        Route::post('users/bulkActions', [UserController::class, 'bulkActions']);
     });
 
     // Recruiter routes

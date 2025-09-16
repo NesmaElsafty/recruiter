@@ -13,11 +13,13 @@ return new class extends Migration
     {
         //
         Schema::table('users', function (Blueprint $table) {
+            $table->string('phone')->nullable();
             $table->string('company_name')->nullable();
             $table->string('job_title')->nullable();
             $table->foreignId('city_id')->nullable()->constrained('cities');
             $table->foreignId('major_id')->nullable()->constrained('majors');
             $table->enum('type', ['candidate', 'recruiter', 'admin'])->nullable();
+            $table->boolean('is_active')->nullable();
             $table->softDeletes();
         });
     }
@@ -29,11 +31,13 @@ return new class extends Migration
     {
         //
         Schema::table('users', function (Blueprint $table) {
+            $table->dropColumn('phone');
             $table->dropColumn('company_name');
             $table->dropColumn('job_title');
             $table->dropColumn('city_id');
             $table->dropColumn('major_id');
             $table->dropColumn('type');
+            $table->dropColumn('is_active');
             $table->dropColumn('deleted_at');
             $table->dropSoftDeletes();
         });
