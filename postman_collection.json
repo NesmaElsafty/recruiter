@@ -7,6 +7,261 @@
 	},
 	"item": [
 		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Admin Register",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Admin User\",\n    \"email\": \"admin@example.com\",\n    \"password\": \"123456\",\n    \"password_confirmation\": \"123456\",\n    \"type\": \"admin\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/admin/register",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"admin",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Admin Login",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"Admin@example.com\",\n    \"password\": \"123456\",\n    \"type\": \"admin\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/admin/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"admin",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Recruiter Register",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Recruiter User\",\n    \"email\": \"recruiter@example.com\",\n    \"password\": \"123456\",\n    \"password_confirmation\": \"123456\",\n    \"type\": \"recruiter\",\n    \"company_name\": \"Tech Corp\",\n    \"job_title\": \"HR Manager\",\n    \"city_id\": 1,\n    \"major_id\": 1\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/recruiter/register",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"recruiter",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Recruiter Login",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"recruiter@example.com\",\n    \"password\": \"123456\",\n    \"type\": \"recruiter\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/recruiter/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"recruiter",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Candidate Register",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Candidate User\",\n    \"email\": \"candidate@example.com\",\n    \"password\": \"123456\",\n    \"password_confirmation\": \"123456\",\n    \"type\": \"candidate\",\n    \"city_id\": 1,\n    \"major_id\": 1\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/candidate/register",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"candidate",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Candidate Login",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"candidate@example.com\",\n    \"password\": \"123456\",\n    \"type\": \"candidate\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/candidate/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"candidate",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Profile",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/auth/profile?api_token={{auth_token}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"profile"
+							],
+							"query": [
+								{
+									"key": "api_token",
+									"value": "{{auth_token}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Logout",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/auth/logout?api_token={{auth_token}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"logout"
+							],
+							"query": [
+								{
+									"key": "api_token",
+									"value": "{{auth_token}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
 			"name": "Cities",
 			"item": [
 				{
@@ -342,6 +597,11 @@
 		{
 			"key": "search_query",
 			"value": "computer",
+			"type": "string"
+		},
+		{
+			"key": "auth_token",
+			"value": "",
 			"type": "string"
 		}
 	]
