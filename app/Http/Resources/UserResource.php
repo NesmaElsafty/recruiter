@@ -4,6 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Http\Resources\FeedbackResource;
 
 class UserResource extends JsonResource
 {
@@ -39,6 +40,11 @@ class UserResource extends JsonResource
                     'name_ar' => $this->major->name_ar,
                 ];
             }),
+
+            'feedbacks' => $this->whenLoaded('feedbacks', function () {
+                return FeedbackResource::collection($this->feedbacks);
+            }),
+
             'image' => $this->when($this->getFirstMediaUrl('avatar'), function () {
                 return [
                     'url' => $this->getFirstMediaUrl('avatar'),
@@ -46,6 +52,7 @@ class UserResource extends JsonResource
                     'medium' => $this->getFirstMediaUrl('avatar', 'medium'),
                 ];
             }),
+             
             // 'resume' => $this->when($this->getFirstMediaUrl('resume'), function () {
             //     return [
             //         'url' => $this->getFirstMediaUrl('resume'),

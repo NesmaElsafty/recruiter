@@ -20,6 +20,9 @@ class DatabaseSeeder extends Seeder
             CitySeeder::class,
             MajorSeeder::class,
             UserSeeder::class,
+            FeedbackSeeder::class,
+            ContactUsSeeder::class,
+            SocialMediaSeeder::class,
         ]);
     }
 }

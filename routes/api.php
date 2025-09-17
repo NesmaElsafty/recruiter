@@ -6,6 +6,9 @@ use App\Http\Controllers\CityController;
 use App\Http\Controllers\MajorController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\FeedbackController;
+use App\Http\Controllers\ContactUsController;
+use App\Http\Controllers\SocialMediaController;
 
 /*
 |--------------------------------------------------------------------------
@@ -41,15 +44,25 @@ Route::delete('users/{id}/media/{mediaId}', [UserController::class, 'deleteMedia
 Route::get('users', [UserController::class, 'index']);
 Route::get('users/{id}', [UserController::class, 'show']);
 
+Route::get('contactUs', [ContactUsController::class, 'index']);
+
 // Protected routes (require authentication)
 Route::middleware('auth:api')->group(function () {
+    
+    Route::put('contactUs', [ContactUsController::class, 'update']);
+    Route::resource('socialMedia', SocialMediaController::class);
+    
     // General Auth routes
     Route::prefix('auth')->group(function () {
         Route::get('profile', [AuthController::class, 'profile']);
+        Route::post('updateProfile', [AuthController::class, 'updateProfile']);
+        Route::post('updatePassword', [AuthController::class, 'updatePassword']);
         Route::post('logout', [AuthController::class, 'logout']);
         Route::post('refresh', [AuthController::class, 'refresh']);
     });
 
+    // feedback routes
+    Route::resource('feedbacks', FeedbackController::class);
     // Admin routes
     Route::prefix('admin')->group(function () {
         Route::apiResource('cities', CityController::class)->except(['show', 'index']);
@@ -60,15 +73,20 @@ Route::middleware('auth:api')->group(function () {
         Route::delete('users/{id}', [UserController::class, 'destroy']);
         Route::post('users/bulkActions', [UserController::class, 'bulkActions']);
         Route::get('users/blocklist', [UserController::class, 'blocklist']);
-        Route::get('users/soft-deleted/stats', [UserController::class, 'softDeletedStats']);
 
         Route::get('users/requestsList', [UserController::class, 'requestsList']);
         Route::get('users/acceptedRequests', [UserController::class, 'acceptedRequests']);
         Route::post('users/recruiterConfirmation', [UserController::class, 'recruiterConfirmation']);
+    
+        // feedback routes
+        Route::prefix('feedbacks')->group(function () {    
+            Route::post('/bulkActions', [FeedbackController::class, 'bulkActions']);
+        }); 
     });
-
+    
     // Recruiter routes
     Route::prefix('recruiter')->group(function () {
+       
 
     });
 

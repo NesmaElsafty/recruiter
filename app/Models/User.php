@@ -64,6 +64,14 @@ class User extends Authenticatable implements HasMedia
     }
 
     /**
+     * Get the feedbacks that the user has.
+     */
+    public function feedbacks()
+    {
+        return $this->hasMany(Feedback::class);
+    }
+
+    /**
      * Check if user is admin
      */
     public function isAdmin(): bool

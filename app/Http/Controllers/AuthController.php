@@ -173,4 +173,50 @@ class AuthController extends Controller
             ], 500);
         }
     }
+
+    public function updateProfile(Request $request)
+    {
+        try {
+            $user = auth()->user();
+            $user->update($request->all());
+            $user->load(['city', 'major']);
+            return response()->json([
+                'success' => true,
+                'message' => 'Profile updated successfully',
+                'data' => new UserResource($user)
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to update profile',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function updatePassword(Request $request)
+    {
+        try {
+            $user = auth()->user();
+            if(!Hash::check($request->current_password, $user->password)){
+                return response()->json([
+                    'success' => false,
+                    'message' => 'كلمة المرور الحالية غير صحيحة'
+                ], 401);
+            }else{
+                $user->update(['password' => Hash::make($request->new_password)]);
+                return response()->json([
+                    'success' => true,
+                    'message' => 'تم تحديث كلمة المرور بنجاح'
+                ]);
+            }
+            
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to update password',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
 }
