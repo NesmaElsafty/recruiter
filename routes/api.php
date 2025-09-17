@@ -9,7 +9,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\FeedbackController;
 use App\Http\Controllers\ContactUsController;
 use App\Http\Controllers\SocialMediaController;
-
+use App\Http\Controllers\TermController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -46,6 +46,10 @@ Route::get('users/{id}', [UserController::class, 'show']);
 
 Route::get('contactUs', [ContactUsController::class, 'index']);
 
+// terms routes
+    Route::get('terms', [TermController::class, 'index']);
+    Route::get('terms/{id}', [TermController::class, 'show']);
+
 // Protected routes (require authentication)
 Route::middleware('auth:api')->group(function () {
     
@@ -63,6 +67,7 @@ Route::middleware('auth:api')->group(function () {
 
     // feedback routes
     Route::resource('feedbacks', FeedbackController::class);
+
     // Admin routes
     Route::prefix('admin')->group(function () {
         Route::apiResource('cities', CityController::class)->except(['show', 'index']);
@@ -82,6 +87,11 @@ Route::middleware('auth:api')->group(function () {
         Route::prefix('feedbacks')->group(function () {    
             Route::post('/bulkActions', [FeedbackController::class, 'bulkActions']);
         }); 
+        
+        // term routes
+        Route::post('terms', [TermController::class, 'store']);
+        Route::put('terms/{id}', [TermController::class, 'update']);
+        Route::delete('terms/{id}', [TermController::class, 'destroy']);
     });
     
     // Recruiter routes

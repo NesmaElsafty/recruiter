@@ -224,7 +224,7 @@ class FeedbackSeeder extends Seeder
             Feedback::create($feedback);
         }
 
-        $this->command->info('Feedback seeder completed successfully!');
+        // $this->command->info('Feedback seeder completed successfully!');
     }
 
     /**
