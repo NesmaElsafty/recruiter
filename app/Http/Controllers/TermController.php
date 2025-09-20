@@ -9,6 +9,8 @@ use App\Helpers\PaginationHelper;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Validation\ValidationException;
+use Exception;
+use App\Models\Term;
 
 class TermController extends Controller
 {
@@ -33,7 +35,7 @@ class TermController extends Controller
             
             $data = $request->all();
             $terms = $this->termService->getAllTerms($data)->paginate(15);
-            $user = auth()->user();
+            $user = auth('api')->user();
             $stats = null;
             if($user && $user->type == 'admin') {
                 $stats = $this->termService->getTermsStats();

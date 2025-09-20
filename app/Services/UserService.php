@@ -405,7 +405,7 @@ class UserService
             $users->map($mapUserData)->toArray() // User data rows
         );
 
-        $currentUser = auth()->user();
+        $currentUser = auth('api')->user();
 
         $filename = $type . '_export_' . now()->format('Ymd_His') . '.csv';
         $media = ExportHelper::exportToMedia($data, $currentUser, 'exports', $filename);

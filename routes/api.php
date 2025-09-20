@@ -10,16 +10,8 @@ use App\Http\Controllers\FeedbackController;
 use App\Http\Controllers\ContactUsController;
 use App\Http\Controllers\SocialMediaController;
 use App\Http\Controllers\TermController;
-/*
-|--------------------------------------------------------------------------
-| API Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "api" middleware group. Make something great!
-|
-*/
+use App\Http\Controllers\PlanController;
+
 // Public routes
 
 // Auth routes
@@ -50,6 +42,10 @@ Route::get('contactUs', [ContactUsController::class, 'index']);
     Route::get('terms', [TermController::class, 'index']);
     Route::get('terms/{id}', [TermController::class, 'show']);
 
+// plans routes
+Route::get('plans', [PlanController::class, 'index']);
+Route::get('plans/{id}', [PlanController::class, 'show']);
+
 // Protected routes (require authentication)
 Route::middleware('auth:api')->group(function () {
     
@@ -72,7 +68,8 @@ Route::middleware('auth:api')->group(function () {
     Route::prefix('admin')->group(function () {
         Route::apiResource('cities', CityController::class)->except(['show', 'index']);
         Route::apiResource('majors', MajorController::class)->except(['show', 'index']);
-    // User routes
+        
+        // User routes
         Route::post('users', [UserController::class, 'store']);
         Route::put('users/{id}', [UserController::class, 'update']);
         Route::delete('users/{id}', [UserController::class, 'destroy']);
@@ -92,17 +89,21 @@ Route::middleware('auth:api')->group(function () {
         Route::post('terms', [TermController::class, 'store']);
         Route::put('terms/{id}', [TermController::class, 'update']);
         Route::delete('terms/{id}', [TermController::class, 'destroy']);
+
+        // plan routes
+        Route::post('plans', [PlanController::class, 'store']);
+        Route::put('plans/{id}', [PlanController::class, 'update']);
+        Route::delete('plans/{id}', [PlanController::class, 'destroy']);
+        Route::post('plans/bulkActions', [PlanController::class, 'bulkActions']);
+        Route::get('features', [PlanController::class, 'features']);
     });
     
     // Recruiter routes
     Route::prefix('recruiter')->group(function () {
-       
-
     });
 
     // Candidate routes
     Route::prefix('candidate')->group(function () {
-       
     });
 });
 

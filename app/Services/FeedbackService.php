@@ -10,7 +10,7 @@ use App\Helpers\ExportHelper;
 
 class FeedbackService
 {
- 
+    // indexes
     public function getAllFeedback($data)
     {
         $query = Feedback::with('user');
@@ -64,6 +64,7 @@ class FeedbackService
         return $query;
     }
 
+    // show
     public function getFeedbackById($id)
     {
         $feedback = Feedback::with('user')->find($id);
@@ -196,7 +197,7 @@ class FeedbackService
         return true;
     }
 
-        public function export($ids)
+    public function export($ids)
     {
         $feedbacks = Feedback::whereIn('id', $ids)->with(['user'])->get();
         $data = [];
@@ -212,8 +213,8 @@ class FeedbackService
                 'created_at' => $feedback->created_at?->format('Y-m-d H:i:s'),
             ];
         }
-       
-        $currentUser = auth()->user();
+        
+        $currentUser = auth('api')->user();
 
         $filename = 'feedback_export_' . now()->format('Ymd_His') . '.csv';
         $media = ExportHelper::exportToMedia($data, $currentUser, 'exports', $filename);

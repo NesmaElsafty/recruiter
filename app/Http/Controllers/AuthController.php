@@ -177,7 +177,7 @@ class AuthController extends Controller
     public function updateProfile(Request $request)
     {
         try {
-            $user = auth()->user();
+            $user = auth('api')->user();
             $user->update($request->all());
             $user->load(['city', 'major']);
             return response()->json([
@@ -197,7 +197,7 @@ class AuthController extends Controller
     public function updatePassword(Request $request)
     {
         try {
-            $user = auth()->user();
+            $user = auth('api')->user();
             if(!Hash::check($request->current_password, $user->password)){
                 return response()->json([
                     'success' => false,

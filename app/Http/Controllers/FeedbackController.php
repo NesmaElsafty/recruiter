@@ -9,6 +9,8 @@ use App\Helpers\PaginationHelper;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Validation\ValidationException;
+use Exception;
+use App\Models\Feedback;
 
 class FeedbackController extends Controller
 {
@@ -24,7 +26,7 @@ class FeedbackController extends Controller
         try {
             $data = $request->all();
             $feedbacks = $this->feedbackService->getAllFeedback($data)->paginate(15);
-            $user = auth()->user();
+            $user = auth('api')->user();
             $stats = null;
             if($user->type == 'admin') {
                 $stats = $this->feedbackService->getFeedbackStats();

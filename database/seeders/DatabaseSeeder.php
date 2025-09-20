@@ -24,6 +24,10 @@ class DatabaseSeeder extends Seeder
             ContactUsSeeder::class,
             SocialMediaSeeder::class,
             TermsSeeder::class,
+            FeaturesSeeder::class,
+            PlansSeeder::class,
+            FeaturePlanSeeder::class,
+            DummyDataSeeder::class,
         ]);
     }
 }

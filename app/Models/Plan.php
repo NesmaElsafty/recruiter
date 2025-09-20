@@ -5,10 +5,15 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class SocialMedia extends Model
+class Plan extends Model
 {
     use HasFactory;
 
     protected $guarded = [];
-    protected $table = 'social_media';
+    protected $table = 'plans';
+
+    public function features()
+    {
+        return $this->belongsToMany(Feature::class);
+    }
 }
