@@ -11,6 +11,7 @@ use App\Http\Controllers\ContactUsController;
 use App\Http\Controllers\SocialMediaController;
 use App\Http\Controllers\TermController;
 use App\Http\Controllers\PlanController;
+use App\Http\Controllers\NotificationController;    
 
 // Public routes
 
@@ -96,6 +97,9 @@ Route::middleware('auth:api')->group(function () {
         Route::delete('plans/{id}', [PlanController::class, 'destroy']);
         Route::post('plans/bulkActions', [PlanController::class, 'bulkActions']);
         Route::get('features', [PlanController::class, 'features']);
+
+        // notification routes
+        Route::apiResource('notifications', NotificationController::class);
     });
     
     // Recruiter routes

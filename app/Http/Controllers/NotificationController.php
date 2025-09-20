@@ -1,0 +1,197 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Http\Controllers\Controller;
+use App\Http\Resources\NotificationResource;
+use App\Services\NotificationService;
+use App\Helpers\PaginationHelper;
+use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Validation\Rule;
+use Exception;
+use App\Services\AlertService;
+use App\Models\Notification;
+
+
+class NotificationController extends Controller
+{
+    protected NotificationService $notificationService;
+    protected AlertService $alertService;
+    public function __construct(NotificationService $notificationService, AlertService $alertService)
+    {
+        $this->notificationService = $notificationService;
+        $this->alertService = $alertService;
+    }
+
+    public function index(Request $request)
+    {
+        try {
+            $notifications = $this->notificationService->getAllNotifications($request->all())->paginate(10);
+            
+            return response()->json([
+                'data' => NotificationResource::collection($notifications),
+                'pagination' => PaginationHelper::paginate($notifications),
+                'stats' => $this->notificationService->getNotificationStats(),
+                'message' => 'تم جلب الإشعارات بنجاح',
+                'status' => 'success',
+            ], 200);
+        } catch (Exception $th) {
+            return response()->json([
+                'message' => 'فشلت جلب الإشعارات',
+                'status' => 'error',
+                'error' => $th->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'required|string',
+            'type' => ['required', Rule::in(['notification', 'alert'])],
+            'segments' => ['required', 'array', 'min:1'],
+            'segments.*' => ['required', Rule::in(['admin', 'candidate', 'recruiter'])],
+            'status' => ['sometimes', Rule::in(['planned', 'sent', 'unsent'])],
+            'scheduled_at' => 'nullable|date|after:now',
+        ]);
+
+        $notification = $this->notificationService->createNotification($validated);
+        $notification->sendToUsers($validated['segments']);
+        return response()->json([
+            'message' => 'Notification created successfully',
+            'data' => new NotificationResource($notification)
+        ], 201);
+    }
+    public function show(int $id)
+    {
+        $notification = $this->notificationService->getNotificationById($id);
+
+        if (!$notification) {
+            return response()->json([
+                'message' => 'Notification not found'
+            ], 404);
+        }
+
+        return response()->json([
+            'data' => new NotificationResource($notification)
+        ]);
+    }
+
+    
+    public function update(Request $request, int $id)
+    {   try{
+        $validated = $request->validate([
+            'title' => 'sometimes|required|string|max:255',
+            'description' => 'sometimes|required|string',
+            'type' => ['sometimes', 'required', Rule::in(['notification', 'alert'])],
+            'segments' => ['sometimes', 'required', 'array', 'min:1'],
+            'segments.*' => ['required', Rule::in(['admin', 'candidate', 'recruiter'])],
+            'status' => ['sometimes', Rule::in(['planned', 'sent', 'unsent'])],
+            'scheduled_at' => 'nullable|date',
+        ]);
+
+        $notification = $this->notificationService->updateNotification($id, $validated);
+
+        return response()->json([
+            'message' => 'Notification updated successfully',
+            'data' => new NotificationResource($notification)
+        ]);
+    } catch (Exception $e) {
+        return response()->json([
+            'message' => 'Failed to update notification',
+            'error' => $e->getMessage()
+        ], 500);
+    }
+    }
+
+    
+    public function destroy($id)
+    {   
+        try{
+        $this->notificationService->deleteNotification($id);
+        return response()->json([
+            'message' => 'Notification deleted successfully'
+        ]);
+    } catch (Exception $e) {
+        return response()->json([
+            'message' => 'Failed to delete notification',
+            'error' => $e->getMessage()
+        ], 500);
+    }
+    }
+
+    // notify user
+    public function notifyUser(Request $request)
+    {
+        $notification = $this->notificationService->getNotificationById($request->notification_id);
+        $notifyUsers = $notification->notifyUsers;
+        foreach($notifyUsers as $notifyUser){
+        //  create alert
+            $data = [
+                'user_id' => $notifyUser->user_id,
+                'user_type' => $notifyUser->user_type,
+                'title' => $notification->title,
+                'description' => $notification->description,
+                'is_read' => false,
+            ];
+            $alert = $this->alertService->storeAlert($data);
+            
+        }
+        
+        return response()->json([
+            'message' => 'Notification sent successfully',
+            'data' => new NotificationResource($notification)
+        ]);
+    }
+
+    
+    public function getStats()
+    {
+        $stats = $this->notificationService->getNotificationStats();
+
+        return response()->json([
+            'data' => $stats
+        ]);
+    }
+
+    
+    public function bulkUpdate(Request $request)
+    {
+        $validated = $request->validate([
+            'ids' => 'required|array|min:1',
+            'ids.*' => 'integer|exists:notifications,id',
+            'data' => 'required|array',
+            'data.status' => ['sometimes', Rule::in(['planned', 'sent', 'unsent'])],
+            'data.type' => ['sometimes', Rule::in(['notification', 'alert'])],
+            'data.segments' => ['sometimes', 'array', 'min:1'],
+            'data.segments.*' => ['required', Rule::in(['admins', 'clients', 'companies'])],
+        ]);
+
+        $updated = $this->notificationService->bulkUpdateNotifications(
+            $validated['ids'], 
+            $validated['data']
+        );
+
+        return response()->json([
+            'message' => "Successfully updated {$updated} notifications"
+        ]);
+    }
+
+    
+    public function bulkDelete(Request $request)
+    {
+        $validated = $request->validate([
+            'ids' => 'required|array|min:1',
+            'ids.*' => 'integer|exists:notifications,id',
+        ]);
+
+        $deleted = $this->notificationService->bulkDeleteNotifications($validated['ids']);
+
+        return response()->json([
+            'message' => "Successfully deleted {$deleted} notifications"
+        ]);
+    }
+}

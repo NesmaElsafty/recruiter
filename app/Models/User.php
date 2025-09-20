@@ -106,6 +106,14 @@ class User extends Authenticatable implements HasMedia
     }
 
     /**
+     * Get the alerts that the user has.
+     */
+    public function alerts()
+    {
+        return $this->hasMany(Alert::class);
+    }
+
+    /**
      * Revoke the user's API token
      */
     public function revokeToken(): void
@@ -152,4 +160,10 @@ class User extends Authenticatable implements HasMedia
             ->height(300)
             ->performOnCollections('avatar');
     }
+
+    
+    public function notifications(){
+        return $this->belongsToMany(Notification::class, 'notify_users', 'user_id', 'notification_id');
+    }
+
 }
