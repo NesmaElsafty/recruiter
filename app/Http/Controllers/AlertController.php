@@ -71,7 +71,6 @@ class AlertController extends Controller
         }
     }
 
-
     // test storing alert
     public function store(Request $request)
     {
