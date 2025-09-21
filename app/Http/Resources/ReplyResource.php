@@ -5,9 +5,8 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use App\Http\Resources\UserResource;
-use App\Http\Resources\ReplyResource;
 
-class MessageResource extends JsonResource
+class ReplyResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -18,11 +17,12 @@ class MessageResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'message' => $this->message,
-            'sender' => new UserResource($this->sender),
-            'replies' => ReplyResource::collection($this->replies),
-            'is_read' => $this->is_read,
-            'is_replied' => $this->is_replied,
+            'reply' => $this->reply,
+            'replyer' => [
+                'id' => $this->user->id,
+                'name' => $this->user->fname . ' ' . $this->user->lname,
+                'type' => $this->user->type,
+            ],
             'created_at' => $this->created_at?->format('Y-m-d H:i:s'),
             'updated_at' => $this->updated_at?->format('Y-m-d H:i:s'),
         ];

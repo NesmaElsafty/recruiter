@@ -7,8 +7,11 @@ use Illuminate\Http\Request;
 use App\Services\MessageService;
 use App\Http\Resources\MessageResource;
 use App\Models\Message;
+use App\Models\Reply;
+use App\Models\User;
 use Exception;
 use App\Helpers\PaginationHelper;
+
 
 class MessageController extends Controller
 {
@@ -66,8 +69,6 @@ class MessageController extends Controller
     }
 
 
-
-    // get message by id
     public function show($id)
     {
         try{
@@ -137,5 +138,47 @@ class MessageController extends Controller
         }
     }
    
+    // reply
+    public function reply(Request $request)
+    {
+        try{
+            $request->validate([
+                'message_id' => 'required|exists:messages,id',
+                'reply' => 'required|string',
+            ]);
+
+            $user = auth('api')->user();
+
+            if($user->type != 'admin') {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'You are not authorized to reply to this message',
+                ], 401);
+            }
+
+            $message = Message::find($request->message_id);
+
+            $reply = new Reply();
+            $reply->message_id = $message->id;
+            $reply->user_id = $user->id;
+            $reply->reply = $request->reply;
+            $reply->save();
+
+            $message->is_replied = true;
+            $message->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Reply sent successfully',
+                'data' => new MessageResource($message)
+            ]);
+        }catch(Exception $e){
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to reply',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
 
 }
