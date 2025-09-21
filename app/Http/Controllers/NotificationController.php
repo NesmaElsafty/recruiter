@@ -158,29 +158,6 @@ class NotificationController extends Controller
     }
 
     
-    public function bulkUpdate(Request $request)
-    {
-        $validated = $request->validate([
-            'ids' => 'required|array|min:1',
-            'ids.*' => 'integer|exists:notifications,id',
-            'data' => 'required|array',
-            'data.status' => ['sometimes', Rule::in(['planned', 'sent', 'unsent'])],
-            'data.type' => ['sometimes', Rule::in(['notification', 'alert'])],
-            'data.segments' => ['sometimes', 'array', 'min:1'],
-            'data.segments.*' => ['required', Rule::in(['admins', 'clients', 'companies'])],
-        ]);
-
-        $updated = $this->notificationService->bulkUpdateNotifications(
-            $validated['ids'], 
-            $validated['data']
-        );
-
-        return response()->json([
-            'message' => "Successfully updated {$updated} notifications"
-        ]);
-    }
-
-    
     public function bulkDelete(Request $request)
     {
         $validated = $request->validate([

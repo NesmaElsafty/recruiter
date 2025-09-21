@@ -100,6 +100,7 @@ Route::middleware('auth:api')->group(function () {
 
         // notification routes
         Route::apiResource('notifications', NotificationController::class);
+        Route::post('notifications/bulkDelete', [NotificationController::class, 'bulkDelete']);
     });
     
     // Recruiter routes

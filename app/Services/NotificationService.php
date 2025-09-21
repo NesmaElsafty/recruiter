@@ -15,7 +15,9 @@ class NotificationService
     {
         $query = Notification::query();
 
-        $query->where('type', $data['type']);
+        if(isset($data['type'])) {
+            $query->where('type', $data['type']);
+        }
 
         if(isset($data['search'])) {
             $query->where('title', 'like', "%{$data['search']}%")
@@ -78,22 +80,6 @@ class NotificationService
         $notification->users()->detach();
         return $notification->delete();
     }
-
-    // public function notifyUser($id): bool
-    // {
-    //     $notification = Notification::find($id);
-    //     $notification->users;
-    //     $notification->users()->sync($notification->users);
-    //     return true;
-    // }
-
-    // public function getScheduledNotifications(): Collection
-    // {
-    //     return Notification::planned()
-    //         ->where('scheduled_at', '<=', Carbon::now())
-    //         ->orderBy('scheduled_at', 'asc')
-    //         ->get();
-    // }
 
     public function getNotificationStats()
     {
