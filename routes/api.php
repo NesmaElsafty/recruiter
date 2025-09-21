@@ -12,6 +12,9 @@ use App\Http\Controllers\SocialMediaController;
 use App\Http\Controllers\TermController;
 use App\Http\Controllers\PlanController;
 use App\Http\Controllers\NotificationController;    
+use App\Http\Controllers\AlertController;
+use App\Events\AlertCreated;
+use App\Models\User;
 
 // Public routes
 
@@ -65,6 +68,10 @@ Route::middleware('auth:api')->group(function () {
     // feedback routes
     Route::resource('feedbacks', FeedbackController::class);
 
+    // alert routes
+    Route::resource('alerts', AlertController::class);
+    Route::post('alerts/toggleRead', [AlertController::class, 'toggleRead']);
+
     // Admin routes
     Route::prefix('admin')->group(function () {
         Route::apiResource('cities', CityController::class)->except(['show', 'index']);
@@ -101,6 +108,7 @@ Route::middleware('auth:api')->group(function () {
         // notification routes
         Route::apiResource('notifications', NotificationController::class);
         Route::post('notifications/bulkDelete', [NotificationController::class, 'bulkDelete']);
+        Route::post('notifications/notify', [NotificationController::class, 'notify']);
     });
     
     // Recruiter routes
@@ -110,6 +118,29 @@ Route::middleware('auth:api')->group(function () {
     // Candidate routes
     Route::prefix('candidate')->group(function () {
     });
+});
+
+
+// test pusher notifications
+Route::post('/test-alert', function (Request $request) {
+    $data = $request->validate([
+        'user_id' => 'required|integer',
+        'title'   => 'sometimes|string',
+        'body'    => 'sometimes|string',
+        'type'    => 'sometimes|string',
+    ]);
+
+    event(new AlertCreated([
+        'title' => $data['title'] ?? 'New Notification',
+        'body'  => $data['body']  ?? 'Hello from Laravel 🎉',
+        'type'  => $data['type']  ?? 'info',
+    ], (int) $data['user_id']));
+
+    return [
+        'ok'      => true,
+        'channel' => 'user.' . (int) $data['user_id'],  // للتأكيد
+        'event'   => 'alert.created',
+    ];
 });
 
 

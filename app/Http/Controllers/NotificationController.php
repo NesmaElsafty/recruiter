@@ -124,27 +124,22 @@ class NotificationController extends Controller
     }
 
     // notify user
-    public function notifyUser(Request $request)
-    {
-        $notification = $this->notificationService->getNotificationById($request->notification_id);
-        $notifyUsers = $notification->notifyUsers;
-        foreach($notifyUsers as $notifyUser){
-        //  create alert
-            $data = [
-                'user_id' => $notifyUser->user_id,
-                'user_type' => $notifyUser->user_type,
-                'title' => $notification->title,
-                'description' => $notification->description,
-                'is_read' => false,
-            ];
-            $alert = $this->alertService->storeAlert($data);
-            
+    public function notify(Request $request)
+    {   
+        try{
+            $request->validate([
+                'notification_id' => 'required|exists:notifications,id',
+            ]);
+            $this->notificationService->notify($request->notification_id);
+            return response()->json([
+                'message' => 'Notification sent successfully'
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => 'Failed to send notification',
+                'error' => $e->getMessage()
+            ], 500);
         }
-        
-        return response()->json([
-            'message' => 'Notification sent successfully',
-            'data' => new NotificationResource($notification)
-        ]);
     }
 
     

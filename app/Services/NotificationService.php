@@ -7,9 +7,16 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Carbon\Carbon;
 use App\Models\User;
+use App\Services\AlertService;
 
 class NotificationService
 {
+    protected AlertService $alertService;
+
+    public function __construct(AlertService $alertService)
+    {
+        $this->alertService = $alertService;
+    }
 
     public function getAllNotifications($data)
     {
@@ -54,6 +61,22 @@ class NotificationService
 
         $users = User::whereIn('type', json_decode($segments))->where('is_active', true)->get();       
         $notification->users()->sync($users);
+
+        if($data['status'] == 'sent'){
+            // Prepare bulk alert data to avoid N+1 queries
+            $alertData = $users->map(function($user) use ($data) {
+                return [
+                    'user_id' => $user->id,
+                    'title' => $data['title'],
+                    'description' => $data['description'],
+                ];
+            })->toArray();
+
+            // Use AlertService for bulk creation
+            if (!empty($alertData)) {
+                $this->alertService->createBulkAlerts($alertData);
+            }
+        }
         return $notification;
     }
 
@@ -71,6 +94,18 @@ class NotificationService
 
         $users = User::whereIn('type', json_decode($segments))->where('is_active', true)->get();
         $notification->users()->sync($users);
+
+        // same here
+        if($data['status'] == 'sent'){
+            $alertData = $users->map(function($user) use ($data) {
+                return [
+                    'user_id' => $user->id,
+                    'title' => $data['title'],
+                    'description' => $data['description'],
+                ];
+            })->toArray();
+            $this->alertService->createBulkAlerts($alertData);
+        }
         return $notification;
     }
 
@@ -189,5 +224,20 @@ class NotificationService
     public function bulkDeleteNotifications(array $ids): int
     {
         return Notification::whereIn('id', $ids)->delete();
+    }
+
+    // notify user
+    public function notify($notification_id)
+    {
+        $notification = Notification::find($notification_id);
+        $users = $notification->users;
+            $alertData = $users->map(function($user) use ($notification) {
+                return [
+                    'user_id' => $user->id,
+                    'title' => $notification->title,
+                    'description' => $notification->description,
+                ];
+            })->toArray();
+            $this->alertService->createBulkAlerts($alertData);
     }
 }
