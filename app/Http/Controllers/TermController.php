@@ -21,12 +21,9 @@ class TermController extends Controller
         $this->termService = $termService;
     }
 
-    /**
-     * Display a listing of terms
-     */
+
     public function index(Request $request)
     {
-        // dd($request->all());
         try {
             $request->validate([
                 'type' => 'required|array|in:terms,privacy_policy,faq',
@@ -55,9 +52,6 @@ class TermController extends Controller
         }
     }
 
-    /**
-     * Store a newly created term
-     */
     public function store(Request $request)
     {
         try {
@@ -87,9 +81,6 @@ class TermController extends Controller
         }
     }
 
-    /**
-     * Display the specified term
-     */
     public function show($id)
     {
         try {
@@ -108,9 +99,6 @@ class TermController extends Controller
         }
     }
 
-    /**
-     * Update the specified term
-     */
     public function update(Request $request, $id)
     {
         try {
@@ -132,9 +120,6 @@ class TermController extends Controller
         }
     }
 
-    /**
-     * Remove the specified term
-     */
     public function destroy($id)
     {
         try {
@@ -153,9 +138,7 @@ class TermController extends Controller
         }
     }
 
-    /**
-     * Get terms by type
-     */
+
     public function getByType($type)
     {
         try {
@@ -174,9 +157,7 @@ class TermController extends Controller
         }
     }
 
-    /**
-     * Get terms by user type
-     */
+
     public function getByUserType($userType)
     {
         try {
@@ -195,9 +176,7 @@ class TermController extends Controller
         }
     }
 
-    /**
-     * Get terms statistics
-     */
+
     public function stats()
     {
         try {
@@ -216,9 +195,7 @@ class TermController extends Controller
         }
     }
 
-    /**
-     * Bulk delete terms
-     */
+
     public function bulkDelete(Request $request)
     {
         try {
@@ -242,9 +219,7 @@ class TermController extends Controller
         }
     }
 
-    /**
-     * Toggle active status for multiple terms
-     */
+
     public function activationToggle(Request $request)
     {
         try {
@@ -274,9 +249,7 @@ class TermController extends Controller
         }
     }
 
-    /**
-     * Export terms
-     */
+
     public function export(Request $request)
     {
         try {

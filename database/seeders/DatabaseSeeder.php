@@ -29,6 +29,7 @@ class DatabaseSeeder extends Seeder
             FeaturePlanSeeder::class,
             DummyDataSeeder::class,
             NotificationSeeder::class,
+            MessageSeeder::class,
         ]);
     }
 }

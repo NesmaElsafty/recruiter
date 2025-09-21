@@ -15,6 +15,7 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\AlertController;
 use App\Events\AlertCreated;
 use App\Models\User;
+use App\Http\Controllers\MessageController;
 
 // Public routes
 
@@ -71,6 +72,13 @@ Route::middleware('auth:api')->group(function () {
     // alert routes
     Route::resource('alerts', AlertController::class);
     Route::post('alerts/toggleRead', [AlertController::class, 'toggleRead']);
+
+    // message routes
+    Route::get('messages', [MessageController::class, 'index']);
+    Route::get('messages/{id}', [MessageController::class, 'show']);
+    Route::post('messages', [MessageController::class, 'store']);
+    Route::post('messages/bulkActions', [MessageController::class, 'bulkActions']);
+
 
     // Admin routes
     Route::prefix('admin')->group(function () {

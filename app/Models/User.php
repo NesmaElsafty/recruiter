@@ -166,4 +166,10 @@ class User extends Authenticatable implements HasMedia
         return $this->belongsToMany(Notification::class, 'notify_users', 'user_id', 'notification_id');
     }
 
+    // messages
+    public function messages()
+    {
+        return $this->hasMany(Message::class);
+    }
+
 }
