@@ -30,6 +30,7 @@ class DatabaseSeeder extends Seeder
             DummyDataSeeder::class,
             NotificationSeeder::class,
             MessageSeeder::class,
+            InterviewSeeder::class,
         ]);
     }
 }

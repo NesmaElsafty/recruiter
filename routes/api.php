@@ -16,6 +16,7 @@ use App\Http\Controllers\AlertController;
 use App\Events\AlertCreated;
 use App\Models\User;
 use App\Http\Controllers\MessageController;
+use App\Http\Controllers\InterviewController;
 
 // Public routes
 
@@ -79,6 +80,10 @@ Route::middleware('auth:api')->group(function () {
     Route::post('messages', [MessageController::class, 'store']);
     Route::post('messages/bulkActions', [MessageController::class, 'bulkActions']);
 
+    // interview routes
+    Route::get('interviews', [InterviewController::class, 'index']);
+    Route::get('interviews/{id}', [InterviewController::class, 'show']);
+
 
     // Admin routes
     Route::prefix('admin')->group(function () {
@@ -121,6 +126,8 @@ Route::middleware('auth:api')->group(function () {
         // reply msg
         Route::post('messages/reply', [MessageController::class, 'reply']);
 
+        // admin export routes
+        Route::post('interviews/export', [InterviewController::class, 'export']);
     });
     
     // Recruiter routes

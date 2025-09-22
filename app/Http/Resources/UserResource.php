@@ -25,7 +25,9 @@ class UserResource extends JsonResource
             'is_active' => $this->is_active,
             'company_name' => $this->company_name,
             'job_title' => $this->job_title,
-            'interviews' => $this->interviews ?? 0,
+            'interviews' => $this->whenLoaded('interviews', function () {
+                return InterviewResource::collection($this->interviews);
+            }),
             'city' => $this->whenLoaded('city', function () {
                 return [
                     'id' => $this->city->id,

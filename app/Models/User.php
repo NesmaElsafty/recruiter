@@ -172,4 +172,10 @@ class User extends Authenticatable implements HasMedia
         return $this->hasMany(Message::class);
     }
 
+    // interviews
+    public function interviews()
+    {
+        return $this->hasMany(Interview::class);
+    }
+
 }

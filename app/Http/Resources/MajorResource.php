@@ -18,8 +18,6 @@ class MajorResource extends JsonResource
             'id' => $this->id,
             'name_en' => $this->name_en,
             'name_ar' => $this->name_ar,
-            'created_at' => $this->created_at?->format('Y-m-d H:i:s'),
-            'updated_at' => $this->updated_at?->format('Y-m-d H:i:s'),
         ];
     }
 }
