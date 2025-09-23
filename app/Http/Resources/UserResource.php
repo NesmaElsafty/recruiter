@@ -30,9 +30,15 @@ class UserResource extends JsonResource
             'status' => $this->is_active ? LocalizationHelper::getStatusValue('active') : LocalizationHelper::getStatusValue('inactive'),
             'company_name' => $this->company_name,
             'job_title' => $this->job_title,
+
             'interviews' => $this->whenLoaded('interviews', function () {
                 return InterviewResource::collection($this->interviews);
             }),
+
+            'subscriptions' => $this->whenLoaded('subscriptions', function () {
+                return SubscriptionResource::collection($this->subscriptions);
+            }),
+
             'city' => $this->whenLoaded('city', function () {
                 return new CityResource($this->city);
             }),

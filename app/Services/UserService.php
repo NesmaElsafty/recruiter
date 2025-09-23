@@ -99,12 +99,7 @@ class UserService
     // CRUD
     public function getUserById($id)
     {
-        $user = User::with('feedbacks', 'city', 'major')->find($id);
-        
-        if (!$user) {
-            throw new ModelNotFoundException('User not found');
-        }
-        
+        $user = User::with('feedbacks', 'city', 'major', 'subscriptions','interviews')->find($id);
         return $user;
     }
 
