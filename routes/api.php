@@ -19,6 +19,8 @@ use App\Http\Controllers\MessageController;
 use App\Http\Controllers\InterviewController;
 use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\RetrievalController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ReportController;
     
 // Public routes
 
@@ -144,6 +146,25 @@ Route::middleware('auth:api')->group(function () {
         
         // retrieval routes
         Route::post('retrievals/action', [RetrievalController::class, 'action']);
+        
+        // dashboard routes
+        Route::prefix('dashboard')->group(function () {
+            Route::get('getDashboardStats', [DashboardController::class, 'getDashboardStats']);
+            Route::get('getUserActivity', [DashboardController::class, 'getUserActivity']);
+            Route::get('getInterviewActivity', [DashboardController::class, 'getInterviewActivity']);
+            Route::get('getSubscriptionActivity', [DashboardController::class, 'getSubscriptionActivity']);
+            Route::get('getLastSubscriptions', [DashboardController::class, 'getLast5Subscriptions']);
+        });
+
+        // report routes (custom range analytics)
+        Route::prefix('reports')->group(function () {
+            Route::get('getUserActivityByDateRange', [ReportController::class, 'getUserActivityByDateRange']);
+            Route::get('getInterviewStatusByDateRange', [ReportController::class, 'getInterviewStatusByDateRange']);
+            Route::get('getCandidateMajorsByDateRange', [ReportController::class, 'getCandidateMajorsByDateRange']);
+            Route::get('getCandidateCitiesByDateRange', [ReportController::class, 'getCandidateCitiesByDateRange']);
+            Route::get('getInterviewPerformanceByDateRange', [ReportController::class, 'getInterviewPerformanceByDateRange']);
+            Route::get('getSubscriptionsByDateRange', [ReportController::class, 'getSubscriptionsByDateRange']);
+        });
     });
     
     // Recruiter routes
