@@ -32,6 +32,7 @@ class DatabaseSeeder extends Seeder
             MessageSeeder::class,
             InterviewSeeder::class,
             SubscriptionSeeder::class,
+            RetrievalSeeder::class,
         ]);
     }
 }

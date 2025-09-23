@@ -18,6 +18,7 @@ use App\Models\User;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\InterviewController;
 use App\Http\Controllers\SubscriptionController;
+use App\Http\Controllers\RetrievalController;
     
 // Public routes
 
@@ -89,6 +90,10 @@ Route::middleware('auth:api')->group(function () {
     // subscription routes
     Route::get('subscriptions', [SubscriptionController::class, 'index']);
     Route::get('subscriptions/{id}', [SubscriptionController::class, 'show']);
+    
+    // retrieval routes
+    Route::get('retrievals', [RetrievalController::class, 'index']);
+    Route::get('retrievals/{id}', [RetrievalController::class, 'show']);
 
     // Admin routes
     Route::prefix('admin')->group(function () {
@@ -136,6 +141,9 @@ Route::middleware('auth:api')->group(function () {
 
         // subscription routes
         Route::post('subscriptions/bulkActions', [SubscriptionController::class, 'bulkActions']);
+        
+        // retrieval routes
+        Route::post('retrievals/action', [RetrievalController::class, 'action']);
     });
     
     // Recruiter routes

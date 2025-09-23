@@ -50,6 +50,20 @@ return [
     'subscription_activated_successfully' => 'تم تفعيل الاشتراك بنجاح',
     'subscription_deactivated_successfully' => 'تم إلغاء تفعيل الاشتراك بنجاح',
     'failed_to_toggle_subscription' => 'فشل في تغيير حالة الاشتراك',
+    
+    // Retrieval related
+    'retrievals_retrieved_successfully' => 'تم جلب طلبات الاسترداد بنجاح',
+    'failed_to_retrieve_retrievals' => 'فشل في جلب طلبات الاسترداد',
+    'retrieval_created_successfully' => 'تم إنشاء طلب الاسترداد بنجاح',
+    'failed_to_create_retrieval' => 'فشل في إنشاء طلب الاسترداد',
+    'retrieval_updated_successfully' => 'تم تحديث طلب الاسترداد بنجاح',
+    'failed_to_update_retrieval' => 'فشل في تحديث طلب الاسترداد',
+    'retrieval_deleted_successfully' => 'تم حذف طلب الاسترداد بنجاح',
+    'failed_to_delete_retrieval' => 'فشل في حذف طلب الاسترداد',
+    'retrieval_retrieved_successfully' => 'تم جلب طلب الاسترداد بنجاح',
+    'failed_to_retrieve_retrieval' => 'فشل في جلب طلب الاسترداد',
+    'retrieval_not_found' => 'طلب الاسترداد غير موجود',
+    'subscription_not_found_or_not_owned' => 'الاشتراك غير موجود أو لا تملكه',
     'term_deleted_successfully' => 'تم حذف المصطلح بنجاح',
     'failed_to_delete_term' => 'فشل في حذف المصطلح',
     'terms_deleted_successfully' => 'تم حذف المصطلحات بنجاح',
@@ -213,6 +227,8 @@ return [
     'start_date' => 'تاريخ البداية',
     'end_date' => 'تاريخ النهاية',
     'duration_type' => 'نوع المدة',
+    'reason' => 'السبب',
+    'retrieval_id' => 'معرف طلب الاسترداد',
     
     // Status values
     'status_active' => 'نشط',

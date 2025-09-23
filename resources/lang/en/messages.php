@@ -176,6 +176,20 @@ return [
     'subscription_deactivated_successfully' => 'Subscription deactivated successfully',
     'failed_to_toggle_subscription' => 'Failed to toggle subscription status',
     
+    // Retrieval related
+    'retrievals_retrieved_successfully' => 'Retrievals retrieved successfully',
+    'failed_to_retrieve_retrievals' => 'Failed to retrieve retrievals',
+    'retrieval_created_successfully' => 'Retrieval created successfully',
+    'failed_to_create_retrieval' => 'Failed to create retrieval',
+    'retrieval_updated_successfully' => 'Retrieval updated successfully',
+    'failed_to_update_retrieval' => 'Failed to update retrieval',
+    'retrieval_deleted_successfully' => 'Retrieval deleted successfully',
+    'failed_to_delete_retrieval' => 'Failed to delete retrieval',
+    'retrieval_retrieved_successfully' => 'Retrieval retrieved successfully',
+    'failed_to_retrieve_retrieval' => 'Failed to retrieve retrieval',
+    'retrieval_not_found' => 'Retrieval not found',
+    'subscription_not_found_or_not_owned' => 'Subscription not found or you do not own this subscription',
+    
     // Field names
     'id' => 'ID',
     'name' => 'Name',
@@ -213,6 +227,8 @@ return [
     'start_date' => 'Start Date',
     'end_date' => 'End Date',
     'duration_type' => 'Duration Type',
+    'reason' => 'Reason',
+    'retrieval_id' => 'Retrieval ID',
     
     // Status values
     'status_active' => 'Active',

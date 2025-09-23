@@ -184,4 +184,10 @@ class User extends Authenticatable implements HasMedia
         return $this->hasMany(Subscription::class);
     }
 
+    // retrievals
+    public function retrievals()
+    {
+        return $this->hasMany(Retrieval::class);
+    }
+
 }
