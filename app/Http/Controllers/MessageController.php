@@ -11,6 +11,7 @@ use App\Models\Reply;
 use App\Models\User;
 use Exception;
 use App\Helpers\PaginationHelper;
+use App\Helpers\LocalizationHelper;
 
 
 class MessageController extends Controller
@@ -32,18 +33,18 @@ class MessageController extends Controller
                 $messages = $this->messageService->getAllMessages($request->all())->paginate(15);
             }
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Messages retrieved successfully',
-                'data' => MessageResource::collection($messages),
-                'pagination' => PaginationHelper::paginate($messages)
-            ]);
+            return LocalizationHelper::successResponse(
+                'messages_retrieved_successfully',
+                MessageResource::collection($messages),
+                200,
+                ['pagination' => PaginationHelper::paginate($messages)]
+            );
         }catch(Exception $e){
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to retrieve messages',
-                'error' => $e->getMessage()
-            ], 500);
+            return LocalizationHelper::errorResponse(
+                'failed_to_retrieve_messages',
+                $e->getMessage(),
+                500
+            );
         }
     }
 
@@ -55,16 +56,15 @@ class MessageController extends Controller
                 'message' => 'required|string',
             ]);
             $this->messageService->store($request->all());
-            return response()->json([
-                'success' => true,
-                'message' => 'Message sent successfully',
-            ]);
+            return LocalizationHelper::successResponse(
+                'message_sent_successfully'
+            );
         }catch(Exception $e){
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to send message',
-                'error' => $e->getMessage()
-            ], 500);
+            return LocalizationHelper::errorResponse(
+                'failed_to_send_message',
+                $e->getMessage(),
+                500
+            );
         }
     }
 
@@ -80,24 +80,25 @@ class MessageController extends Controller
             }else{
                 $message = Message::find($id);
                 if($message->sender_id != auth('api')->user()->id) {
-                    return response()->json([
-                        'success' => false,
-                        'message' => 'You are not authorized to view this message',
-                    ], 401);
+                    return LocalizationHelper::errorResponse(
+                        'not_authorized_to_view_message',
+                        null,
+                        401
+                    );
                 }
             }
-            return response()->json([
-                'success' => true,
-                'message' => 'Message retrieved successfully',
-                'data' => new MessageResource($message),
-                'is_read' => $message->is_read
-            ]);
+            return LocalizationHelper::successResponse(
+                'message_retrieved_successfully',
+                new MessageResource($message),
+                200,
+                ['is_read' => $message->is_read]
+            );
         }catch(Exception $e){
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to retrieve message',
-                'error' => $e->getMessage()
-            ], 500);
+            return LocalizationHelper::errorResponse(
+                'failed_to_retrieve_message',
+                $e->getMessage(),
+                500
+            );
         }
     }
 
@@ -124,17 +125,18 @@ class MessageController extends Controller
                     $result = $this->messageService->export($ids);
                     break;
             }
-        return response()->json([
-            'success' => true,
-            'message' => 'Bulk actions performed successfully',
-            'url' => $request->action == 'export' ? $result: null
-        ]);
+        return LocalizationHelper::successResponse(
+            'bulk_actions_performed_successfully',
+            null,
+            200,
+            ['url' => $request->action == 'export' ? $result: null]
+        );
         }catch(Exception $e){
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to bulk actions',
-                'error' => $e->getMessage()
-            ], 500);
+            return LocalizationHelper::errorResponse(
+                'failed_to_bulk_actions',
+                $e->getMessage(),
+                500
+            );
         }
     }
    
@@ -150,10 +152,11 @@ class MessageController extends Controller
             $user = auth('api')->user();
 
             if($user->type != 'admin') {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'You are not authorized to reply to this message',
-                ], 401);
+                return LocalizationHelper::errorResponse(
+                    'not_authorized_to_reply',
+                    null,
+                    401
+                );
             }
 
             $message = Message::find($request->message_id);
@@ -167,17 +170,16 @@ class MessageController extends Controller
             $message->is_replied = true;
             $message->save();
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Reply sent successfully',
-                'data' => new MessageResource($message)
-            ]);
+            return LocalizationHelper::successResponse(
+                'reply_sent_successfully',
+                new MessageResource($message)
+            );
         }catch(Exception $e){
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to reply',
-                'error' => $e->getMessage()
-            ], 500);
+            return LocalizationHelper::errorResponse(
+                'failed_to_reply',
+                $e->getMessage(),
+                500
+            );
         }
     }
 

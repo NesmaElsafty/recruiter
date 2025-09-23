@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\NotificationResource;
 use App\Services\NotificationService;
 use App\Helpers\PaginationHelper;
+use App\Helpers\LocalizationHelper;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -30,19 +31,21 @@ class NotificationController extends Controller
         try {
             $notifications = $this->notificationService->getAllNotifications($request->all())->paginate(10);
             
-            return response()->json([
-                'data' => NotificationResource::collection($notifications),
-                'pagination' => PaginationHelper::paginate($notifications),
-                'stats' => $this->notificationService->getNotificationStats(),
-                'message' => 'تم جلب الإشعارات بنجاح',
-                'status' => 'success',
-            ], 200);
+            return LocalizationHelper::successResponse(
+                'notifications_retrieved_successfully',
+                NotificationResource::collection($notifications),
+                200,
+                [
+                    'pagination' => PaginationHelper::paginate($notifications),
+                    'stats' => $this->notificationService->getNotificationStats(),
+                ]
+            );
         } catch (Exception $th) {
-            return response()->json([
-                'message' => 'فشلت جلب الإشعارات',
-                'status' => 'error',
-                'error' => $th->getMessage(),
-            ], 500);
+            return LocalizationHelper::errorResponse(
+                'failed_to_retrieve_notifications',
+                $th->getMessage(),
+                500
+            );
         }
     }
 

@@ -10,6 +10,7 @@ use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Exception;
+use App\Helpers\LocalizationHelper;
 
 class UserController extends Controller
 {
@@ -30,18 +31,21 @@ class UserController extends Controller
             $stats = null;
             $stats = $this->userService->stats($request->type);
 
-            return response()->json([
-                'success' => true,
-                'data' => UserResource::collection($users),
-                'stats' => $stats,
-                'pagination' => PaginationHelper::paginate($users),
-            ]);
+            return LocalizationHelper::successResponse(
+                'users_retrieved_successfully',
+                UserResource::collection($users),
+                200,
+                [
+                    'stats' => $stats,
+                    'pagination' => PaginationHelper::paginate($users),
+                ]
+            );
         } catch (Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to retrieve users',
-                'error' => $e->getMessage()
-            ], 500);
+            return LocalizationHelper::errorResponse(
+                'failed_to_retrieve_users',
+                $e->getMessage(),
+                500
+            );
         }
     }
 
@@ -52,18 +56,21 @@ class UserController extends Controller
             $users = $this->userService->blocklist($request->all())->paginate(10);
             $stats = $this->userService->softDeletedStats();
             
-            return response()->json([
-                'success' => true,
-                'data' => UserResource::collection($users),
-                'stats' => $stats,
-                'pagination' => PaginationHelper::paginate($users)
-            ]);
+            return LocalizationHelper::successResponse(
+                'blocklist_retrieved_successfully',
+                UserResource::collection($users),
+                200,
+                [
+                    'stats' => $stats,
+                    'pagination' => PaginationHelper::paginate($users)
+                ]
+            );
         } catch (Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to retrieve blocklist',
-                'error' => $e->getMessage()
-            ], 500);
+            return LocalizationHelper::errorResponse(
+                'failed_to_retrieve_blocklist',
+                $e->getMessage(),
+                500
+            );
         }
     }
 
@@ -72,17 +79,18 @@ class UserController extends Controller
     {
         try {
             $users = $this->userService->requestsList()->paginate(10);
-            return response()->json([
-                'success' => true,
-                'data' => UserResource::collection($users),
-                'pagination' => PaginationHelper::paginate($users)
-            ]);
+            return LocalizationHelper::successResponse(
+                'requests_list_retrieved_successfully',
+                UserResource::collection($users),
+                200,
+                ['pagination' => PaginationHelper::paginate($users)]
+            );
         } catch (Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to retrieve requests list',
-                'error' => $e->getMessage()
-            ], 500);
+            return LocalizationHelper::errorResponse(
+                'failed_to_retrieve_requests_list',
+                $e->getMessage(),
+                500
+            );
         }
     }
 
@@ -95,16 +103,16 @@ class UserController extends Controller
                 'is_active' => 'required|boolean',
             ]);
         $user = $this->userService->recruiterConfirmation($request->all());
-        return response()->json([
-            'success' => true,
-            'data' => new UserResource($user)
-            ]);
+        return LocalizationHelper::successResponse(
+            'recruiter_confirmation_updated_successfully',
+            new UserResource($user)
+        );
         } catch (Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to retrieve recruiter confirmation',
-                'error' => $e->getMessage()
-            ], 500);
+            return LocalizationHelper::errorResponse(
+                'failed_to_update_recruiter_confirmation',
+                $e->getMessage(),
+                500
+            );
         }
     }
 
@@ -113,17 +121,18 @@ class UserController extends Controller
     {
         try {
             $users = $this->userService->acceptedRequests()->paginate(10);
-            return response()->json([
-                'success' => true,
-                'data' => UserResource::collection($users),
-                'pagination' => PaginationHelper::paginate($users)
-            ]);
+            return LocalizationHelper::successResponse(
+                'accepted_requests_retrieved_successfully',
+                UserResource::collection($users),
+                200,
+                ['pagination' => PaginationHelper::paginate($users)]
+            );
         } catch (Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to retrieve accepted requests',
-                'error' => $e->getMessage()
-            ], 500);
+            return LocalizationHelper::errorResponse(
+                'failed_to_retrieve_accepted_requests',
+                $e->getMessage(),
+                500
+            );
         }
     }
 

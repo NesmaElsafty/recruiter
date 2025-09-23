@@ -9,22 +9,21 @@ class PlanResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
+        $locale = app()->getLocale();
+        
         return [
             'id' => $this->id,
-            'name_en' => $this->name_en,
-            'name_ar' => $this->name_ar,
-            'description_en' => $this->description_en,
-            'description_ar' => $this->description_ar,
+            'name' => $this->{"name_{$locale}"} ?? $this->name_en,
+            'description' => $this->{"description_{$locale}"} ?? $this->description_en,
             'price' => $this->price !== null ? (float)$this->price : null,
             'duration' => $this->duration,
             'type' => $this->type,
             'is_active' => (bool)$this->is_active,
             'features' => $this->whenLoaded('features', function () {
-                return $this->features->map(function ($f) {
+                return $this->features->map(function ($f) use ($locale) {
                     return [
                         'id' => $f->id,
-                        'name_en' => $f->name_en,
-                        'name_ar' => $f->name_ar,
+                        'name' => $f->{"name_{$locale}"} ?? $f->name_en,
                     ];
                 });
             }),

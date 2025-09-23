@@ -14,10 +14,11 @@ class MajorResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $locale = app()->getLocale();
+        
         return [
             'id' => $this->id,
-            'name_en' => $this->name_en,
-            'name_ar' => $this->name_ar,
+            'name' => $this->{"name_{$locale}"} ?? $this->name_en,
         ];
     }
 }

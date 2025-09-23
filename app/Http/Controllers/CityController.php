@@ -10,6 +10,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Validation\ValidationException;
 use Exception;
+use App\Helpers\LocalizationHelper;
 
 class CityController extends Controller
 {
@@ -25,16 +26,16 @@ class CityController extends Controller
     {
         try {
             $cities = $this->cityService->getAllCities();
-            return response()->json([
-                'success' => true,
-                'data' => CityResource::collection($cities)
-            ]);
+            return LocalizationHelper::successResponse(
+                'cities_retrieved_successfully',
+                CityResource::collection($cities)
+            );
         } catch (Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to retrieve cities',
-                'error' => $e->getMessage()
-            ], 500);
+            return LocalizationHelper::errorResponse(
+                'failed_to_retrieve_cities',
+                $e->getMessage(),
+                500
+            );
         }
     }
 
@@ -48,23 +49,23 @@ class CityController extends Controller
 
             $city = $this->cityService->createCity($request->all());
 
-            return response()->json([
-                'success' => true,
-                'message' => 'City created successfully',
-                'data' => new CityResource($city)
-            ], 201);
+            return LocalizationHelper::successResponse(
+                'city_created_successfully',
+                new CityResource($city),
+                201
+            );
         } catch (ValidationException $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Validation failed',
-                'errors' => $e->errors()
-            ], 422);
+            return LocalizationHelper::errorResponse(
+                'validation_failed',
+                $e->errors(),
+                422
+            );
         } catch (Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to create city',
-                'error' => $e->getMessage()
-            ], 500);
+            return LocalizationHelper::errorResponse(
+                'failed_to_create_city',
+                $e->getMessage(),
+                500
+            );
         }
     }
 
@@ -72,21 +73,22 @@ class CityController extends Controller
     {
         try {
             $city = $this->cityService->getCityById((int)$id);
-            return response()->json([
-                'success' => true,
-                'data' => new CityResource($city)
-            ]);
+            return LocalizationHelper::successResponse(
+                'city_retrieved_successfully',
+                new CityResource($city)
+            );
         } catch (ModelNotFoundException $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'City not found'
-            ], 404);
+            return LocalizationHelper::errorResponse(
+                'city_not_found',
+                null,
+                404
+            );
         } catch (Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to retrieve city',
-                'error' => $e->getMessage()
-            ], 500);
+            return LocalizationHelper::errorResponse(
+                'failed_to_retrieve_city',
+                $e->getMessage(),
+                500
+            );
         }
     }
 

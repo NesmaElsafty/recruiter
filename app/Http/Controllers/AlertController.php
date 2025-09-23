@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Services\AlertService;
 use App\Http\Resources\AlertResource;
 use App\Helpers\PaginationHelper;
+use App\Helpers\LocalizationHelper;
 use Illuminate\Http\JsonResponse;
 use App\Services\NotificationService;
 use App\Models\Alert;
@@ -48,20 +49,20 @@ class AlertController extends Controller
             $alert = Alert::find($request->alert_id);
            
             if($user->id != $alert->user_id){
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'غير مصرح لك بتحديث حالة القراءة لهذه الإشعار'
-                ], 401);
+                return LocalizationHelper::errorResponse(
+                    'not_authorized_to_update_alert',
+                    null,
+                    401
+                );
             }            
 
             $alert->update([
                 'is_read' => !$alert->is_read,
             ]);
-            return response()->json([
-                'status' => 'success',
-                'message' => 'تم تحديث حالة القراءة لهذه الإشعار بنجاح',
-                'data' => new AlertResource($alert),
-            ]);
+            return LocalizationHelper::successResponse(
+                'alert_read_status_updated_successfully',
+                new AlertResource($alert)
+            );
         }catch(\Exception $e){
             return response()->json([
                 'status' => 'error',
@@ -87,11 +88,10 @@ class AlertController extends Controller
                 'is_read' => false,
             ];
         $alert = $this->alertService->storeAlert($data);
-        return response()->json([
-            'status' => 'success',
-                'message' => 'Alert stored successfully',
-                'data' => new AlertResource($alert),
-            ]);
+        return LocalizationHelper::successResponse(
+            'alert_stored_successfully',
+            new AlertResource($alert)
+        );
         }catch(\Exception $e){
             return response()->json([
                 'status' => 'error',

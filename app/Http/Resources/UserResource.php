@@ -5,6 +5,9 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use App\Http\Resources\FeedbackResource;
+use App\Http\Resources\CityResource;
+use App\Http\Resources\MajorResource;
+use App\Helpers\LocalizationHelper;
 
 class UserResource extends JsonResource
 {
@@ -22,25 +25,19 @@ class UserResource extends JsonResource
             'email' => $this->email,
             'phone' => $this->phone,
             'type' => $this->type,
+            'type_label' => LocalizationHelper::getTypeValue($this->type),
             'is_active' => $this->is_active,
+            'status' => $this->is_active ? LocalizationHelper::getStatusValue('active') : LocalizationHelper::getStatusValue('inactive'),
             'company_name' => $this->company_name,
             'job_title' => $this->job_title,
             'interviews' => $this->whenLoaded('interviews', function () {
                 return InterviewResource::collection($this->interviews);
             }),
             'city' => $this->whenLoaded('city', function () {
-                return [
-                    'id' => $this->city->id,
-                    'name_en' => $this->city->name_en,
-                    'name_ar' => $this->city->name_ar,
-                ];
+                return new CityResource($this->city);
             }),
             'major' => $this->whenLoaded('major', function () {
-                return [
-                    'id' => $this->major->id,
-                    'name_en' => $this->major->name_en,
-                    'name_ar' => $this->major->name_ar,
-                ];
+                return new MajorResource($this->major);
             }),
 
             'feedbacks' => $this->whenLoaded('feedbacks', function () {

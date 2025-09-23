@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Services\TermService;
 use App\Http\Resources\TermResource;
 use App\Helpers\PaginationHelper;
+use App\Helpers\LocalizationHelper;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Validation\ValidationException;
@@ -44,11 +45,11 @@ class TermController extends Controller
                 'pagination' => PaginationHelper::paginate($terms)
             ]);
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to fetch terms',
-                'error' => $e->getMessage()
-            ], 500);
+            return LocalizationHelper::errorResponse(
+                'failed_to_fetch_terms',
+                $e->getMessage(),
+                500
+            );
         }
     }
 
@@ -67,17 +68,17 @@ class TermController extends Controller
 
             $term = $this->termService->createTerm($validated);
             
-            return response()->json([
-                'success' => true,
-                'message' => 'Term created successfully',
-                'data' => new TermResource($term)
-            ], 201);
+            return LocalizationHelper::successResponse(
+                'term_created_successfully',
+                new TermResource($term),
+                201
+            );
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to create term',
-                'error' => $e->getMessage()
-            ], 500);
+            return LocalizationHelper::errorResponse(
+                'failed_to_create_term',
+                $e->getMessage(),
+                500
+            );
         }
     }
 

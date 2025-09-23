@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Exception;
+use App\Helpers\LocalizationHelper;
 
 class AuthController extends Controller
 {
@@ -41,20 +42,20 @@ class AuthController extends Controller
             // Load relationships for response
             $user->load(['city', 'major']);
 
-            return response()->json([
-                'success' => true,
-                'message' => 'User registered successfully',
-                'data' => [
+            return LocalizationHelper::successResponse(
+                'user_created_successfully',
+                [
                     'user' => new UserResource($user),
                     'token' => $token,
-                ]
-            ], 201);
+                ],
+                201
+            );
         } catch (Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Registration failed',
-                'error' => $e->getMessage()
-            ], 500);
+            return LocalizationHelper::errorResponse(
+                'failed_to_create_user',
+                $e->getMessage(),
+                500
+            );
         }
     }
 
@@ -72,10 +73,11 @@ class AuthController extends Controller
                        ->first();
 
             if (!$user || !Hash::check($credentials['password'], $user->password)) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Invalid credentials'
-                ], 401);
+                return LocalizationHelper::errorResponse(
+                    'unauthorized',
+                    null,
+                    401
+                );
             }
 
             // Create token
@@ -84,21 +86,20 @@ class AuthController extends Controller
             // Load relationships for response
             $user->load(['city', 'major']);
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Login successful',
-                'data' => [
+            return LocalizationHelper::successResponse(
+                'login_successful',
+                [
                     'user' => new UserResource($user),
                     'token' => $token,
                     'token_type' => 'Bearer'
                 ]
-            ]);
+            );
         } catch (Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Login failed',
-                'error' => $e->getMessage()
-            ], 500);
+            return LocalizationHelper::errorResponse(
+                'login_failed',
+                $e->getMessage(),
+                500
+            );
         }
     }
 
@@ -111,16 +112,15 @@ class AuthController extends Controller
             $user = $request->user();
             $user->revokeToken();
 
-            return response()->json([ 
-                'success' => true,
-                'message' => 'Logout successful'
-            ]);
+            return LocalizationHelper::successResponse(
+                'logout_successful'
+            );
         } catch (Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Logout failed',
-                'error' => $e->getMessage()
-            ], 500);
+            return LocalizationHelper::errorResponse(
+                'logout_failed',
+                $e->getMessage(),
+                500
+            );
         }
     }
 
@@ -133,16 +133,16 @@ class AuthController extends Controller
             $user = $request->user();
             $user->load(['city', 'major']);
 
-            return response()->json([
-                'success' => true,
-                'data' => new UserResource($user)
-            ]);
+            return LocalizationHelper::successResponse(
+                'profile_retrieved_successfully',
+                new UserResource($user)
+            );
         } catch (Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to retrieve profile',
-                'error' => $e->getMessage()
-            ], 500);
+            return LocalizationHelper::errorResponse(
+                'failed_to_retrieve_profile',
+                $e->getMessage(),
+                500
+            );
         }
     }
 
@@ -157,20 +157,19 @@ class AuthController extends Controller
             // Create new token
             $token = $user->createToken('auth-token');
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Token refreshed successfully',
-                'data' => [
+            return LocalizationHelper::successResponse(
+                'token_refreshed_successfully',
+                [
                     'token' => $token,
                     'token_type' => 'Bearer'
                 ]
-            ]);
+            );
         } catch (Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Token refresh failed',
-                'error' => $e->getMessage()
-            ], 500);
+            return LocalizationHelper::errorResponse(
+                'token_refresh_failed',
+                $e->getMessage(),
+                500
+            );
         }
     }
 
@@ -180,17 +179,16 @@ class AuthController extends Controller
             $user = auth('api')->user();
             $user->update($request->all());
             $user->load(['city', 'major']);
-            return response()->json([
-                'success' => true,
-                'message' => 'Profile updated successfully',
-                'data' => new UserResource($user)
-            ]);
+            return LocalizationHelper::successResponse(
+                'profile_updated_successfully',
+                new UserResource($user)
+            );
         } catch (Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to update profile',
-                'error' => $e->getMessage()
-            ], 500);
+            return LocalizationHelper::errorResponse(
+                'failed_to_update_profile',
+                $e->getMessage(),
+                500
+            );
         }
     }
 
@@ -199,24 +197,24 @@ class AuthController extends Controller
         try {
             $user = auth('api')->user();
             if(!Hash::check($request->current_password, $user->password)){
-                return response()->json([
-                    'success' => false,
-                    'message' => 'كلمة المرور الحالية غير صحيحة'
-                ], 401);
+                return LocalizationHelper::errorResponse(
+                    'invalid_current_password',
+                    null,
+                    401
+                );
             }else{
                 $user->update(['password' => Hash::make($request->new_password)]);
-                return response()->json([
-                    'success' => true,
-                    'message' => 'تم تحديث كلمة المرور بنجاح'
-                ]);
+                return LocalizationHelper::successResponse(
+                    'password_updated_successfully'
+                );
             }
             
         } catch (Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to update password',
-                'error' => $e->getMessage()
-            ], 500);
+            return LocalizationHelper::errorResponse(
+                'failed_to_update_password',
+                $e->getMessage(),
+                500
+            );
         }
     }
 }
