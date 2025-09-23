@@ -178,4 +178,10 @@ class User extends Authenticatable implements HasMedia
         return $this->hasMany(Interview::class);
     }
 
+    // subscriptions
+    public function subscriptions()
+    {
+        return $this->hasMany(Subscription::class);
+    }
+
 }

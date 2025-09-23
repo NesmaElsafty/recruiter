@@ -31,6 +31,7 @@ class DatabaseSeeder extends Seeder
             NotificationSeeder::class,
             MessageSeeder::class,
             InterviewSeeder::class,
+            SubscriptionSeeder::class,
         ]);
     }
 }

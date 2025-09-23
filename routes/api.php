@@ -17,7 +17,8 @@ use App\Events\AlertCreated;
 use App\Models\User;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\InterviewController;
-
+use App\Http\Controllers\SubscriptionController;
+    
 // Public routes
 
 // Auth routes
@@ -85,6 +86,10 @@ Route::middleware('auth:api')->group(function () {
     Route::get('interviews/{id}', [InterviewController::class, 'show']);
 
 
+    // subscription routes
+    Route::get('subscriptions', [SubscriptionController::class, 'index']);
+    Route::get('subscriptions/{id}', [SubscriptionController::class, 'show']);
+
     // Admin routes
     Route::prefix('admin')->group(function () {
         Route::apiResource('cities', CityController::class)->except(['show', 'index']);
@@ -128,6 +133,9 @@ Route::middleware('auth:api')->group(function () {
 
         // admin export routes
         Route::post('interviews/export', [InterviewController::class, 'export']);
+
+        // subscription routes
+        Route::post('subscriptions/bulkActions', [SubscriptionController::class, 'bulkActions']);
     });
     
     // Recruiter routes

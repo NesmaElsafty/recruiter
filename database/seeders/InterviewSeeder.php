@@ -22,6 +22,6 @@ class InterviewSeeder extends Seeder
         Interview::factory(5)->completed()->lowPerformance()->create();
         Interview::factory(8)->cancelled()->create();
 
-        $this->command->info('Created 88 interview records with dummy data.');
+        // $this->command->info('Created 88 interview records with dummy data.');
     }
 }

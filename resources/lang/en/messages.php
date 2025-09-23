@@ -161,6 +161,21 @@ return [
     'major_deleted_successfully' => 'Major deleted successfully',
     'failed_to_delete_major' => 'Failed to delete major',
     
+    // Subscription related
+    'subscriptions_retrieved_successfully' => 'Subscriptions retrieved successfully',
+    'failed_to_retrieve_subscriptions' => 'Failed to retrieve subscriptions',
+    'subscription_created_successfully' => 'Subscription created successfully',
+    'failed_to_create_subscription' => 'Failed to create subscription',
+    'subscription_updated_successfully' => 'Subscription updated successfully',
+    'failed_to_update_subscription' => 'Failed to update subscription',
+    'subscription_deleted_successfully' => 'Subscription deleted successfully',
+    'failed_to_delete_subscription' => 'Failed to delete subscription',
+    'subscription_retrieved_successfully' => 'Subscription retrieved successfully',
+    'failed_to_retrieve_subscription' => 'Failed to retrieve subscription',
+    'subscription_activated_successfully' => 'Subscription activated successfully',
+    'subscription_deactivated_successfully' => 'Subscription deactivated successfully',
+    'failed_to_toggle_subscription' => 'Failed to toggle subscription status',
+    
     // Field names
     'id' => 'ID',
     'name' => 'Name',
@@ -191,6 +206,13 @@ return [
     'performance' => 'Performance',
     'interview_id' => 'Interview ID',
     'rating_type' => 'Rating Type',
+    'subscription_id' => 'Subscription ID',
+    'plan_id' => 'Plan ID',
+    'paid_amount' => 'Paid Amount',
+    'payment_method' => 'Payment Method',
+    'start_date' => 'Start Date',
+    'end_date' => 'End Date',
+    'duration_type' => 'Duration Type',
     
     // Status values
     'status_active' => 'Active',
