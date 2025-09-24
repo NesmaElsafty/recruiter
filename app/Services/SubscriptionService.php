@@ -222,10 +222,65 @@ class SubscriptionService
     /**
      * Create a new subscription
      */
-    public function createSubscription(array $data): Subscription
+    public function createSubscription($data)
     {
-        return Subscription::create($data);
+        $plan = Plan::find($data['plan_id']);
+        $user = auth('api')->user();
+
+        // calculate end date
+        $endDate = now();
+        if ($plan->duration_type === 'monthly') {
+            $endDate->addMonths($plan->duration);
+        } else {
+            $endDate->addYears($plan->duration);
+        }
+
+        $subscription = new Subscription();
+        $subscription->plan_id = $data['plan_id'];
+        $subscription->payment_method = $data['payment_method'];
+        $subscription->user_id = $user->id;
+        $subscription->subscription_id = $plan->id . '-' . $user->id . '-' . now()->format('YmdHis');
+        $subscription->paid_amount = $plan->price;
+        $subscription->is_active = false;
+        $subscription->save();
+
+        return $subscription;
     }
+
+    // cancel subscription
+    public function cancelSubscription($id)
+    {
+        $subscription = Subscription::find($id);
+        $subscription->is_active = false;
+        $subscription->end_date = now();
+        $subscription->save();
+        
+        return $subscription;
+    }
+
+    // payment confirmation
+    public function paymentConfirmation($id)
+    {
+        $subscription = Subscription::find($id);
+        $plan = Plan::find($subscription->plan_id);
+
+        // calculate end date
+        $endDate = now();
+        if ($plan->duration_type === 'monthly') {
+            $endDate->addMonths($plan->duration);
+        } else {
+            $endDate->addYears($plan->duration);
+        }
+
+        $subscription->is_active = true;
+        $subscription->start_date = now();
+        $subscription->end_date = $endDate;
+        $subscription->save();
+
+        return $subscription;
+    }
+
+
 
     /**
      * Update subscription

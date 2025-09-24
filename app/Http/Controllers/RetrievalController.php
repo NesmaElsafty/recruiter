@@ -10,6 +10,7 @@ use App\Http\Resources\RetrievalResource;
 use App\Services\RetrievalService;
 use App\Helpers\PaginationHelper;
 use Exception;
+use App\Models\Subscription;
 
 class RetrievalController extends Controller
 {
@@ -58,6 +59,15 @@ class RetrievalController extends Controller
                     'retrieval_not_found',
                     'Retrieval not found',
                     404
+                );
+            }
+
+            $user = auth('api')->user();
+            if($user->type != 'admin' || $retrieval->user_id != $user->id) {
+                return LocalizationHelper::errorResponse(
+                    'not_authorized_to_view_retrieval',
+                    null,
+                    401
                 );
             }
 
@@ -113,12 +123,18 @@ class RetrievalController extends Controller
                 'reason' => 'required|string|max:1000',
             ]);
             
+            $subscription = $this->subscriptionService->getSubscriptionById($request->subscription_id);
             $user = auth('api')->user();
+            if($user->type != 'admin' || $subscription->user_id != $user->id) {
+                return LocalizationHelper::errorResponse(
+                    'not_authorized_to_create_retrieval',
+                    null,
+                    401
+                );
+            }
             
             // Check if user owns the subscription
-            $subscription = \App\Models\Subscription::where('id', $request->subscription_id)
-                ->where('user_id', $user->id)
-                ->first();
+            $subscription = Subscription::find($request->subscription_id);
                 
             if (!$subscription) {
                 return LocalizationHelper::errorResponse(
@@ -128,25 +144,12 @@ class RetrievalController extends Controller
                 );
             }
 
-            $data = [
-                'subscription_id' => $request->subscription_id,
-                'user_id' => $user->id,
-                'reason' => $request->reason,
-                'status' => 'pending',
-            ];
-
-            $retrieval = $this->retrievalService->createRetrieval($data);
+            $retrieval = $this->retrievalService->createRetrieval($request->all());
 
             return LocalizationHelper::successResponse(
                 'retrieval_created_successfully',
                 new RetrievalResource($retrieval),
                 201
-            );
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            return LocalizationHelper::errorResponse(
-                'validation_failed',
-                $e->errors(),
-                422
             );
         } catch (Exception $e) {
             return LocalizationHelper::errorResponse(
@@ -157,157 +160,61 @@ class RetrievalController extends Controller
         }
     }
 
-    public function update(Request $request)
-    {
-        try {
-            $request->validate([
-                'reason' => 'sometimes|string|max:1000',
-                'status' => 'sometimes|in:pending,approved,rejected',
-            ]);
-
-            $retrieval = $this->retrievalService->getRetrievalById($request->id);
-            
-            if (!$retrieval) {
-                return LocalizationHelper::errorResponse(
-                    'retrieval_not_found',
-                    'Retrieval not found',
-                    404
-                );
-            }
-
-            $user = auth('api')->user();
-            
-            // Only allow users to update their own retrievals (except status)
-            if ($user->type !== 'admin' && $retrieval->user_id !== $user->id) {
-                return LocalizationHelper::errorResponse(
-                    'unauthorized',
-                    'You are not authorized to update this retrieval',
-                    403
-                );
-            }
-
-            // Only admins can update status
-            if (isset($request->status) && $user->type !== 'admin') {
-                return LocalizationHelper::errorResponse(
-                    'unauthorized',
-                    'Only administrators can update retrieval status',
-                    403
-                );
-            }
-
-            $updateData = $request->only(['reason', 'status']);
-            $success = $this->retrievalService->updateRetrieval($request->id, $updateData);
-
-            if (!$success) {
-                return LocalizationHelper::errorResponse(
-                    'failed_to_update_retrieval',
-                    'Failed to update retrieval',
-                    500
-                );
-            }
-
-            $updatedRetrieval = $this->retrievalService->getRetrievalById($request->id);
-
-            return LocalizationHelper::successResponse(
-                'retrieval_updated_successfully',
-                new RetrievalResource($updatedRetrieval),
-                200
-            );
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            return LocalizationHelper::errorResponse(
-                'validation_failed',
-                $e->errors(),
-                422
-            );
-        } catch (Exception $e) {
-            return LocalizationHelper::errorResponse(
-                'failed_to_update_retrieval',
-                $e->getMessage(),
-                500
-            );
-        }
-    }
-
-    public function destroy(Request $request)
-    {
-        try {
-            $retrieval = $this->retrievalService->getRetrievalById($request->id);
-            
-            if (!$retrieval) {
-                return LocalizationHelper::errorResponse(
-                    'retrieval_not_found',
-                    'Retrieval not found',
-                    404
-                );
-            }
-
-            $user = auth('api')->user();
-            
-            // Only allow users to delete their own retrievals or admins
-            if ($user->type !== 'admin' && $retrieval->user_id !== $user->id) {
-                return LocalizationHelper::errorResponse(
-                    'unauthorized',
-                    'You are not authorized to delete this retrieval',
-                    403
-                );
-            }
-
-            $success = $this->retrievalService->deleteRetrieval($request->id);
-
-            if (!$success) {
-                return LocalizationHelper::errorResponse(
-                    'failed_to_delete_retrieval',
-                    'Failed to delete retrieval',
-                    500
-                );
-            }
-
-            return LocalizationHelper::successResponse(
-                'retrieval_deleted_successfully',
-                null,
-                200
-            );
-        } catch (Exception $e) {
-            return LocalizationHelper::errorResponse(
-                'failed_to_delete_retrieval',
-                $e->getMessage(),
-                500
-            );
-        }
-    }
-
-    // Bulk actions
-    // public function bulkActions(Request $request)
+    // public function update(Request $request)
     // {
     //     try {
     //         $request->validate([
-    //             'ids' => 'nullable|array|min:1',
-    //             'ids.*' => 'required|exists:retrievals,id',
-    //             'action' => 'required|string|in:export,statusUpdate',
+    //             'reason' => 'sometimes|string|max:1000',
+    //             'status' => 'sometimes|in:pending,approved,rejected',
     //         ]);
+
+    //         $retrieval = $this->retrievalService->getRetrievalById($request->id);
             
-    //         $ids = [];
-    //         if(isset($request->ids)) {
-    //             $ids = $request->ids;
-    //         } else {
-    //             $ids = Retrieval::pluck('id')->toArray();
+    //         if (!$retrieval) {
+    //             return LocalizationHelper::errorResponse(
+    //                 'retrieval_not_found',
+    //                 'Retrieval not found',
+    //                 404
+    //             );
     //         }
+
+    //         $user = auth('api')->user();
             
-    //         $result = null;
-    //         switch($request->action) {
-    //             case 'statusUpdate':
-    //                 $this->retrievalService->bulkStatusUpdate($ids, $request->status);
-    //                 break;
-    //             case 'export':
-    //                 $result = $this->retrievalService->export($ids);
-    //                 break;
+    //         // Only allow users to update their own retrievals (except status)
+    //         if ($user->type !== 'admin' && $retrieval->user_id !== $user->id) {
+    //             return LocalizationHelper::errorResponse(
+    //                 'unauthorized',
+    //                 'You are not authorized to update this retrieval',
+    //                 403
+    //             );
     //         }
-            
+
+    //         // Only admins can update status
+    //         if (isset($request->status) && $user->type !== 'admin') {
+    //             return LocalizationHelper::errorResponse(
+    //                 'unauthorized',
+    //                 'Only administrators can update retrieval status',
+    //                 403
+    //             );
+    //         }
+
+    //         $updateData = $request->only(['reason', 'status']);
+    //         $success = $this->retrievalService->updateRetrieval($request->id, $updateData);
+
+    //         if (!$success) {
+    //             return LocalizationHelper::errorResponse(
+    //                 'failed_to_update_retrieval',
+    //                 'Failed to update retrieval',
+    //                 500
+    //             );
+    //         }
+
+    //         $updatedRetrieval = $this->retrievalService->getRetrievalById($request->id);
+
     //         return LocalizationHelper::successResponse(
-    //             'bulk_actions_performed_successfully',
-    //             null,
-    //             200,
-    //             ['url' => $request->action == 'export' ? $result: null]
+    //             'retrieval_updated_successfully',
+    //             new RetrievalResource($updatedRetrieval),
+    //             200
     //         );
     //     } catch (\Illuminate\Validation\ValidationException $e) {
     //         return LocalizationHelper::errorResponse(
@@ -317,10 +224,59 @@ class RetrievalController extends Controller
     //         );
     //     } catch (Exception $e) {
     //         return LocalizationHelper::errorResponse(
-    //             'failed_to_bulk_actions',
+    //             'failed_to_update_retrieval',
     //             $e->getMessage(),
     //             500
     //         );
     //     }
     // }
+
+    // public function destroy(Request $request)
+    // {
+    //     try {
+    //         $retrieval = $this->retrievalService->getRetrievalById($request->id);
+            
+    //         if (!$retrieval) {
+    //             return LocalizationHelper::errorResponse(
+    //                 'retrieval_not_found',
+    //                 'Retrieval not found',
+    //                 404
+    //             );
+    //         }
+
+    //         $user = auth('api')->user();
+            
+    //         // Only allow users to delete their own retrievals or admins
+    //         if ($user->type !== 'admin' && $retrieval->user_id !== $user->id) {
+    //             return LocalizationHelper::errorResponse(
+    //                 'unauthorized',
+    //                 'You are not authorized to delete this retrieval',
+    //                 403
+    //             );
+    //         }
+
+    //         $success = $this->retrievalService->deleteRetrieval($request->id);
+
+    //         if (!$success) {
+    //             return LocalizationHelper::errorResponse(
+    //                 'failed_to_delete_retrieval',
+    //                 'Failed to delete retrieval',
+    //                 500
+    //             );
+    //         }
+
+    //         return LocalizationHelper::successResponse(
+    //             'retrieval_deleted_successfully',
+    //             null,
+    //             200
+    //         );
+    //     } catch (Exception $e) {
+    //         return LocalizationHelper::errorResponse(
+    //             'failed_to_delete_retrieval',
+    //             $e->getMessage(),
+    //             500
+    //         );
+    //     }
+    // }
+
 }

@@ -10,6 +10,7 @@ use App\Http\Resources\SubscriptionResource;
 use App\Services\SubscriptionService;
 use App\Helpers\PaginationHelper;
 use Exception;
+use App\Models\User;
 
 class SubscriptionController extends Controller
 {
@@ -58,6 +59,14 @@ class SubscriptionController extends Controller
     public function show(Request $request)
     {
         try {
+            $user = auth('api')->user();
+            if($user->type != 'admin' || $subscription->user_id != $user->id) {
+                return LocalizationHelper::errorResponse(
+                    'not_authorized_to_view_subscription',
+                    null,
+                    401
+                );
+            }
             $subscription = $this->subscriptionService->getSubscriptionById($request->id);
             return LocalizationHelper::successResponse(
                 'subscription_retrieved_successfully',
@@ -112,5 +121,92 @@ class SubscriptionController extends Controller
             );
         }
     }
+
+    // store
+    public function store(Request $request)
+    {
+        try {
+            $request->validate([
+                'plan_id' => 'required|exists:plans,id',
+                'payment_method' => 'required|string',
+            ]);
+            $subscription = $this->subscriptionService->createSubscription($request->all());
+            return LocalizationHelper::successResponse(
+                'subscription_created_successfully',
+                new SubscriptionResource($subscription),
+                200
+            );
+        } catch (Exception $e) {
+            return LocalizationHelper::errorResponse(
+                'failed_to_create_subscription',
+                $e->getMessage(),
+                500
+            );
+        }
+    }
+    
+    // cancel
+    public function cancel(Request $request)
+    {
+        try {
+            $request->validate([
+                'subscription_id' => 'required|exists:subscriptions,id',
+            ]);
+            $subscription = $this->subscriptionService->getSubscriptionById($request->subscription_id);
+            $user = auth('api')->user();
+            if($user->type != 'admin' || $subscription->user_id != $user->id) {
+                return LocalizationHelper::errorResponse(
+                    'not_authorized_to_cancel_subscription',
+                    null,
+                    401
+                );
+            }
+            $subscription = $this->subscriptionService->cancelSubscription($request->subscription_id);
+            return LocalizationHelper::successResponse(
+                'subscription_cancelled_successfully',
+                new SubscriptionResource($subscription),
+                200
+            );
+        } catch (Exception $e) {
+                return LocalizationHelper::errorResponse(
+                'failed_to_cancel_subscription',
+                $e->getMessage(),
+                500
+            );
+        }
+    }
+
+    // payment confirmation
+    public function paymentConfirmation(Request $request)
+    {
+        try {
+            $request->validate([
+                'subscription_id' => 'required|exists:subscriptions,id',
+            ]);
+            $subscription = $this->subscriptionService->getSubscriptionById($request->subscription_id);
+            $user = auth('api')->user();
+            if($user->type != 'admin' || $subscription->user_id != $user->id) {
+                return LocalizationHelper::errorResponse(
+                    'not_authorized_to_payment_confirmation',
+                    null,
+                    401
+                );
+            }
+            $subscription = $this->subscriptionService->paymentConfirmation($request->subscription_id);
+            return LocalizationHelper::successResponse(
+                'payment_confirmed_successfully',
+                new SubscriptionResource($subscription),
+                200
+            );
+        } catch (Exception $e) {
+            return LocalizationHelper::errorResponse(
+                'failed_to_payment_confirmation',
+                $e->getMessage(),
+                500
+            );
+        }
+    }
+
+    
     
 }

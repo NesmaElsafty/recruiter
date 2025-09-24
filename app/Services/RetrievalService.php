@@ -66,16 +66,13 @@ class RetrievalService
     /**
      * Get retrievals by user ID
      */
-    public function getAllRetrievalsByUserId(int $userId): Builder
+    public function getAllRetrievalsByUserId($userId): Builder
     {
         return Retrieval::with(['user', 'subscription.plan'])
             ->where('user_id', $userId)
             ->orderBy('created_at', 'desc');
     }
 
-    /**
-     * Apply sorting to the query
-     */
     private function applySorting(Builder $query, array $data): void
     {
         $sortBy = $data['sorted_by'] ?? 'newest';
@@ -99,7 +96,7 @@ class RetrievalService
         }
     }
 
-    public function getRetrievalById(int $id): ?Retrieval
+    public function getRetrievalById($id): ?Retrieval
     {
         return Retrieval::with(['user', 'subscription.plan'])->find($id);
     }
@@ -107,15 +104,22 @@ class RetrievalService
     /**
      * Create a new retrieval
      */
-    public function createRetrieval(array $data): Retrieval
+    public function createRetrieval($data)
     {
-        return Retrieval::create($data);
+        $retrieval = new Retrieval();
+        $retrieval->subscription_id = $data['subscription_id'];
+        $retrieval->user_id = auth('api')->user()->id;
+        $retrieval->reason = $data['reason'];
+        $retrieval->status = 'pending';
+        $retrieval->save();
+        return $retrieval;
+   
     }
 
     /**
      * Update retrieval
      */
-    public function updateRetrieval(int $id, array $data): bool
+    public function updateRetrieval($id, $data)
     {
         $retrieval = Retrieval::find($id);
         if (!$retrieval) {
@@ -128,7 +132,7 @@ class RetrievalService
     /**
      * Delete retrieval
      */
-    public function deleteRetrieval(int $id): bool
+    public function deleteRetrieval($id)
     {
         $retrieval = Retrieval::find($id);
         if (!$retrieval) {

@@ -115,11 +115,15 @@ Route::middleware('auth:api')->group(function () {
 
     // subscription routes
     Route::get('subscriptions', [SubscriptionController::class, 'index']);
+    Route::post('subscriptions', [SubscriptionController::class, 'store']);
     Route::get('subscriptions/{id}', [SubscriptionController::class, 'show']);
+    Route::post('subscriptions/cancel', [SubscriptionController::class, 'cancel']);
+    Route::post('subscriptions/paymentConfirmation', [SubscriptionController::class, 'paymentConfirmation']);
     
     // retrieval routes
     Route::get('retrievals', [RetrievalController::class, 'index']);
     Route::get('retrievals/{id}', [RetrievalController::class, 'show']);
+    Route::post('retrievals', [RetrievalController::class, 'store']);
 
     // Admin routes
     Route::prefix('admin')->group(function () {
@@ -189,14 +193,6 @@ Route::middleware('auth:api')->group(function () {
             Route::get('getInterviewPerformanceByDateRange', [ReportController::class, 'getInterviewPerformanceByDateRange']);
             Route::get('getSubscriptionsByDateRange', [ReportController::class, 'getSubscriptionsByDateRange']);
         });
-    });
-    
-    // Recruiter routes
-    Route::prefix('recruiter')->group(function () {
-    });
-
-    // Candidate routes
-    Route::prefix('candidate')->group(function () {
     });
 });
 
