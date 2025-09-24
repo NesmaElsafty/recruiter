@@ -11,6 +11,9 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\OtpMail;
 use Exception;
 use App\Helpers\LocalizationHelper;
 
@@ -216,5 +219,66 @@ class AuthController extends Controller
                 500
             );
         }
+    }
+
+    /**
+     * Send OTP to user's email
+     */
+    public function requestEmailOtp(Request $request)
+    {
+        $request->validate(['email' => 'required|email']);
+
+        $code = (string) random_int(100000, 999999);
+        $ttlMinutes = 10;
+        $cacheKey = 'otp:' . strtolower($request->email);
+
+        Cache::put($cacheKey, [
+            'code' => $code,
+            'attempts' => 0,
+        ], now()->addMinutes($ttlMinutes));
+
+        Mail::to($request->email)->send(new OtpMail($code, $ttlMinutes));
+
+        return response()->json([
+            'success' => true,
+            'message' => 'OTP sent to email'
+        ]);
+    }
+
+    /**
+     * Verify email OTP
+     */
+    public function verifyEmailOtp(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+            'code' => 'required|string|size:6',
+        ]);
+
+        $cacheKey = 'otp:' . strtolower($request->email);
+        $entry = Cache::get($cacheKey);
+
+        if (!$entry) {
+            return response()->json([
+                'success' => false,
+                'message' => 'OTP expired or not found'
+            ], 400);
+        }
+
+        if ($entry['code'] !== $request->code) {
+            $entry['attempts'] = ($entry['attempts'] ?? 0) + 1;
+            Cache::put($cacheKey, $entry, now()->addMinutes(5));
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid code'
+            ], 400);
+        }
+
+        Cache::forget($cacheKey);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'OTP verified'
+        ]);
     }
 }

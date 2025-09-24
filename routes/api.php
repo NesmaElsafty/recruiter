@@ -27,6 +27,8 @@ use App\Http\Controllers\ReportController;
 // Auth routes
 Route::post('register', [AuthController::class, 'register']);
 Route::post('login', [AuthController::class, 'login'])->name('login');
+Route::post('auth/requestEmailOtp', [AuthController::class, 'requestEmailOtp']);
+Route::post('auth/verify-email-otp', [AuthController::class, 'verifyEmailOtp']);
 
 // City and major routes
 Route::get('cities', [CityController::class, 'index']);
