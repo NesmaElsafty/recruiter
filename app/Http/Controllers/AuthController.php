@@ -16,9 +16,16 @@ use Illuminate\Support\Facades\Mail;
 use App\Mail\OtpMail;
 use Exception;
 use App\Helpers\LocalizationHelper;
+use App\Services\UserService;
 
 class AuthController extends Controller
 {
+    protected $userService;
+
+    public function __construct(UserService $userService)
+    {
+        $this->userService = $userService;
+    }
     /**
      * Register a new user
      */
@@ -180,8 +187,22 @@ class AuthController extends Controller
     {
         try {
             $user = auth('api')->user();
-            $user->update($request->all());
             $user->load(['city', 'major']);
+
+            $user = $this->userService->updateProfile($user->id, $request->all());
+
+            if($request->hasFile('resume')){
+                $user->clearMediaCollection('resume');
+                $user->addMediaFromRequest('resume')
+                    ->toMediaCollection('resume');
+            }
+
+            if($request->hasFile('image')){
+                $user->clearMediaCollection('avatar');
+                $user->addMediaFromRequest('image')
+                    ->toMediaCollection('avatar');
+            }
+
             return LocalizationHelper::successResponse(
                 'profile_updated_successfully',
                 new UserResource($user)

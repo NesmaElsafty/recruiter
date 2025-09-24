@@ -416,4 +416,18 @@ class UserService
         return true;
     }
 
+
+    public function updateProfile($id, $data){
+        $user = User::find($id);
+        $user->fname = $data['fname'] ?? $user->fname;
+        $user->lname = $data['lname'] ?? $user->lname;
+        $user->phone = $data['phone'] ?? $user->phone;
+        $user->email = $data['email'] ?? $user->email;
+        $user->job_title = $data['job_title'] ?? $user->job_title;
+        $user->major_id = $data['major_id'] ?? $user->major_id;
+        $user->city_id = $data['city_id'] ?? $user->city_id;
+        $user->save();
+        return $user;
+    }
+
 }

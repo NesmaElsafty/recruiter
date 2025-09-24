@@ -121,46 +121,6 @@ class User extends Authenticatable implements HasMedia
         $this->update(['api_token' => null]);
     }
 
-    /**
-     * Register media collections for the user
-     */
-    public function registerMediaCollections(): void
-    {
-        $this->addMediaCollection('avatar')
-            ->acceptsMimeTypes(['image/jpeg', 'image/png', 'image/gif', 'image/webp'])
-            ->singleFile();
-
-        $this->addMediaCollection('documents')
-            ->acceptsMimeTypes(['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'])
-            ->acceptsFile(function (Media $media) {
-                return $media->size <= 10 * 1024 * 1024; // 10MB limit
-            });
-
-        $this->addMediaCollection('resume')
-            ->acceptsMimeTypes(['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'])
-            ->singleFile()
-            ->acceptsFile(function (Media $media) {
-                return $media->size <= 5 * 1024 * 1024; // 5MB limit
-            });
-    }
-
-    /**
-     * Register media conversions for the user
-     */
-    public function registerMediaConversions(Media $media = null): void
-    {
-        $this->addMediaConversion('thumb')
-            ->width(150)
-            ->height(150)
-            ->sharpen(10)
-            ->performOnCollections('avatar');
-
-        $this->addMediaConversion('medium')
-            ->width(300)
-            ->height(300)
-            ->performOnCollections('avatar');
-    }
-
     
     public function notifications(){
         return $this->belongsToMany(Notification::class, 'notify_users', 'user_id', 'notification_id');

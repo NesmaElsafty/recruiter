@@ -50,32 +50,9 @@ class UserResource extends JsonResource
                 return FeedbackResource::collection($this->feedbacks);
             }),
 
-            'image' => $this->when($this->getFirstMediaUrl('avatar'), function () {
-                return [
-                    'url' => $this->getFirstMediaUrl('avatar'),
-                    'thumb' => $this->getFirstMediaUrl('avatar', 'thumb'),
-                    'medium' => $this->getFirstMediaUrl('avatar', 'medium'),
-                ];
-            }),
-             
-            // 'resume' => $this->when($this->getFirstMediaUrl('resume'), function () {
-            //     return [
-            //         'url' => $this->getFirstMediaUrl('resume'),
-            //         'name' => $this->getFirstMedia('resume')?->name,
-            //         'size' => $this->getFirstMedia('resume')?->size,
-            //     ];
-            // }),
-            // 'documents' => $this->when($this->getMedia('documents')->count() > 0, function () {
-            //     return $this->getMedia('documents')->map(function ($media) {
-            //         return [
-            //             'id' => $media->id,
-            //             'name' => $media->name,
-            //             'url' => $media->getUrl(),
-            //             'size' => $media->size,
-            //             'mime_type' => $media->mime_type,
-            //         ];
-            //     });
-            // }),
+            'image' => $this->getFirstMediaUrl('image'),  
+            'resume' => $this->getFirstMediaUrl('resume'),
+           
             'created_at' => $this->created_at?->format('Y-m-d H:i:s'),
             'updated_at' => $this->updated_at?->format('Y-m-d H:i:s'),
         ];
