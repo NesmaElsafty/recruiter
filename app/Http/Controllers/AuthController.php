@@ -50,7 +50,7 @@ class AuthController extends Controller
             $token = $user->createToken('auth-token');
 
             // Load relationships for response
-            $user->load(['city', 'major']);
+            $user->load(['city', 'major', 'skills', 'experiences', 'education']);
 
             return LocalizationHelper::successResponse(
                 'user_created_successfully',
@@ -141,7 +141,7 @@ class AuthController extends Controller
     {
         try {
             $user = $request->user();
-            $user->load(['city', 'major']);
+            $user->load(['city', 'major', 'skills', 'experiences', 'education']);
 
             return LocalizationHelper::successResponse(
                 'profile_retrieved_successfully',
@@ -187,7 +187,7 @@ class AuthController extends Controller
     {
         try {
             $user = auth('api')->user();
-            $user->load(['city', 'major']);
+            $user->load(['city', 'major', 'skills', 'experiences', 'education']);
 
             $user = $this->userService->updateProfile($user->id, $request->all());
 

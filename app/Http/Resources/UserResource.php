@@ -7,6 +7,8 @@ use Illuminate\Http\Resources\Json\JsonResource;
 use App\Http\Resources\FeedbackResource;
 use App\Http\Resources\CityResource;
 use App\Http\Resources\MajorResource;
+use App\Http\Resources\ExperienceResource;
+use App\Http\Resources\EducationResource;
 use App\Helpers\LocalizationHelper;
 
 class UserResource extends JsonResource
@@ -52,6 +54,18 @@ class UserResource extends JsonResource
 
             'image' => $this->getFirstMediaUrl('image'),  
             'resume' => $this->getFirstMediaUrl('resume'),
+
+            'experiences' => $this->whenLoaded('experiences', function () {
+                return ExperienceResource::collection($this->experiences);
+            }),
+
+            'education' => $this->whenLoaded('education', function () {
+                return EducationResource::collection($this->education);
+            }),
+
+            'skills' => $this->whenLoaded('skills', function () {
+                return SkillResource::collection($this->skills);
+            }),
            
             'created_at' => $this->created_at?->format('Y-m-d H:i:s'),
             'updated_at' => $this->updated_at?->format('Y-m-d H:i:s'),

@@ -150,4 +150,9 @@ class User extends Authenticatable implements HasMedia
         return $this->hasMany(Retrieval::class);
     }
 
+    public function skills()
+    {
+        return $this->morphMany(Skill::class, 'skillable');
+    }
+
 }

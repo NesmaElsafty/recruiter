@@ -1,0 +1,120 @@
+{
+  "info": {
+    "name": "Recruiter - Experience API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_postman_id": "a3f7b2c8-4e0f-4b0c-b1d3-6f7f12e6abcd"
+  },
+  "item": [
+    {
+      "name": "Auth - Login",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "url": {
+          "raw": "{{base_url}}/login",
+          "host": ["{{base_url}}"],
+          "path": ["login"]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"candidate@example.com\",\n  \"password\": \"password\",\n  \"type\": \"candidate\"\n}"
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Experience - List (current user)",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{token}}" }
+        ],
+        "url": {
+          "raw": "{{base_url}}/experiences",
+          "host": ["{{base_url}}"],
+          "path": ["experiences"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Experience - Create",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{token}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "url": {
+          "raw": "{{base_url}}/experiences",
+          "host": ["{{base_url}}"],
+          "path": ["experiences"]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"company_name\": \"Acme Corp\",\n  \"position\": \"Software Engineer\",\n  \"location\": \"Riyadh\",\n  \"start_date\": \"2023-01-01\",\n  \"end_date\": \"2024-06-30\",\n  \"description\": \"Worked on backend services.\",\n  \"is_current\": false,\n  \"skills\": [\"PHP\", \"Laravel\", \"MySQL\"]\n}"
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Experience - Show",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{token}}" }
+        ],
+        "url": {
+          "raw": "{{base_url}}/experiences/{{experience_id}}",
+          "host": ["{{base_url}}"],
+          "path": ["experiences", "{{experience_id}}"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Experience - Update",
+      "request": {
+        "method": "PUT",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{token}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "url": {
+          "raw": "{{base_url}}/experiences/{{experience_id}}",
+          "host": ["{{base_url}}"],
+          "path": ["experiences", "{{experience_id}}"]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"company_name\": \"Acme Corp International\",\n  \"position\": \"Senior Engineer\",\n  \"is_current\": true,\n  \"skills\": [\"PHP\", \"Laravel\", \"PostgreSQL\"]\n}"
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Experience - Delete",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{token}}" }
+        ],
+        "url": {
+          "raw": "{{base_url}}/experiences/{{experience_id}}",
+          "host": ["{{base_url}}"],
+          "path": ["experiences", "{{experience_id}}"]
+        }
+      },
+      "response": []
+    }
+  ],
+  "variable": [
+    { "key": "base_url", "value": "http://localhost:8000/api" },
+    { "key": "token", "value": "" },
+    { "key": "experience_id", "value": "1" }
+  ]
+}
+
+

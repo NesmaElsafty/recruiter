@@ -1,0 +1,105 @@
+{
+  "info": {
+    "name": "Recruiter - Skills API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_postman_id": "e3a7102e-7b5f-4b2d-8143-7c6fa0f7d8b2"
+  },
+  "item": [
+    {
+      "name": "Auth - Login",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "url": {
+          "raw": "{{base_url}}/login",
+          "host": ["{{base_url}}"],
+          "path": ["login"]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"candidate@example.com\",\n  \"password\": \"password\",\n  \"type\": \"candidate\"\n}"
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Skills - List",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{token}}" }
+        ],
+        "url": {
+          "raw": "{{base_url}}/skills",
+          "host": ["{{base_url}}"],
+          "path": ["skills"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Skills - Create",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{token}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "url": {
+          "raw": "{{base_url}}/skills",
+          "host": ["{{base_url}}"],
+          "path": ["skills"]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Time Management\"\n}"
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Skills - Update",
+      "request": {
+        "method": "PUT",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{token}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "url": {
+          "raw": "{{base_url}}/skills/{{skill_id}}",
+          "host": ["{{base_url}}"],
+          "path": ["skills", "{{skill_id}}"]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Team Leadership\"\n}"
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Skills - Delete",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{token}}" }
+        ],
+        "url": {
+          "raw": "{{base_url}}/skills/{{skill_id}}",
+          "host": ["{{base_url}}"],
+          "path": ["skills", "{{skill_id}}"]
+        }
+      },
+      "response": []
+    }
+  ],
+  "variable": [
+    { "key": "base_url", "value": "http://localhost:8000/api" },
+    { "key": "token", "value": "" },
+    { "key": "skill_id", "value": "1" }
+  ]
+}
+
+

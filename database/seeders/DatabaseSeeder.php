@@ -20,6 +20,8 @@ class DatabaseSeeder extends Seeder
             CitySeeder::class,
             MajorSeeder::class,
             UserSeeder::class,
+            ExperienceSkillSeeder::class,
+            EducationSkillSeeder::class,
             FeedbackSeeder::class,
             ContactUsSeeder::class,
             SocialMediaSeeder::class,

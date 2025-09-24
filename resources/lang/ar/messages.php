@@ -319,4 +319,27 @@ return [
     'time_weeks_ago' => 'منذ :count أسبوع',
     'time_months_ago' => 'منذ :count شهر',
     'time_years_ago' => 'منذ :count سنة',
+    // الخبرات
+    'experiences_retrieved_successfully' => 'تم جلب الخبرات بنجاح',
+    'failed_to_retrieve_experiences' => 'فشل في جلب الخبرات',
+    'experience_created_successfully' => 'تم إنشاء الخبرة بنجاح',
+    'failed_to_create_experience' => 'فشل في إنشاء الخبرة',
+    'experience_retrieved_successfully' => 'تم جلب الخبرة بنجاح',
+    'failed_to_retrieve_experience' => 'فشل في جلب الخبرة',
+    'experience_updated_successfully' => 'تم تحديث الخبرة بنجاح',
+    'failed_to_update_experience' => 'فشل في تحديث الخبرة',
+    'experience_deleted_successfully' => 'تم حذف الخبرة بنجاح',
+    'failed_to_delete_experience' => 'فشل في حذف الخبرة',
+    'experience_not_found' => 'الخبرة غير موجودة',
+
+    // التعليم
+    'education_retrieved_successfully' => 'تم جلب سجلات التعليم بنجاح',
+    'failed_to_retrieve_education' => 'فشل في جلب سجلات التعليم',
+    'education_created_successfully' => 'تم إنشاء سجل التعليم بنجاح',
+    'failed_to_create_education' => 'فشل في إنشاء سجل التعليم',
+    'education_updated_successfully' => 'تم تحديث سجل التعليم بنجاح',
+    'failed_to_update_education' => 'فشل في تحديث سجل التعليم',
+    'education_deleted_successfully' => 'تم حذف سجل التعليم بنجاح',
+    'failed_to_delete_education' => 'فشل في حذف سجل التعليم',
+    'education_not_found' => 'سجل التعليم غير موجود',
 ];

@@ -1,0 +1,120 @@
+{
+  "info": {
+    "name": "Recruiter - Education API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_postman_id": "b6d8f5b3-4b22-4f3f-9e3a-8b9a1c2d2e01"
+  },
+  "item": [
+    {
+      "name": "Auth - Login",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "url": {
+          "raw": "{{base_url}}/login",
+          "host": ["{{base_url}}"],
+          "path": ["login"]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"candidate@example.com\",\n  \"password\": \"password\",\n  \"type\": \"candidate\"\n}"
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Education - List (current user)",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{token}}" }
+        ],
+        "url": {
+          "raw": "{{base_url}}/education",
+          "host": ["{{base_url}}"],
+          "path": ["education"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Education - Create",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{token}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "url": {
+          "raw": "{{base_url}}/education",
+          "host": ["{{base_url}}"],
+          "path": ["education"]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"university\": \"Tech University\",\n  \"degree\": \"BSc\",\n  \"major_name\": \"Computer Science\",\n  \"start_date\": \"2018-09-01\",\n  \"end_date\": \"2022-06-30\",\n  \"description\": \"Studied software engineering topics.\",\n  \"skills\": [\"Research\", \"Teamwork\", \"Data Analysis\"]\n}"
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Education - Show",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{token}}" }
+        ],
+        "url": {
+          "raw": "{{base_url}}/education/{{education_id}}",
+          "host": ["{{base_url}}"],
+          "path": ["education", "{{education_id}}"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Education - Update",
+      "request": {
+        "method": "PUT",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{token}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "url": {
+          "raw": "{{base_url}}/education/{{education_id}}",
+          "host": ["{{base_url}}"],
+          "path": ["education", "{{education_id}}"]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"university\": \"Tech University\",\n  \"degree\": \"MSc\",\n  \"description\": \"Focused on AI.\",\n  \"skills\": [\"Machine Learning\", \"Python\"]\n}"
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Education - Delete",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{token}}" }
+        ],
+        "url": {
+          "raw": "{{base_url}}/education/{{education_id}}",
+          "host": ["{{base_url}}"],
+          "path": ["education", "{{education_id}}"]
+        }
+      },
+      "response": []
+    }
+  ],
+  "variable": [
+    { "key": "base_url", "value": "http://localhost:8000/api" },
+    { "key": "token", "value": "" },
+    { "key": "education_id", "value": "1" }
+  ]
+}
+
+

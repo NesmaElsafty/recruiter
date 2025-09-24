@@ -319,4 +319,27 @@ return [
     'time_weeks_ago' => ':count weeks ago',
     'time_months_ago' => ':count months ago',
     'time_years_ago' => ':count years ago',
+    // Experience
+    'experiences_retrieved_successfully' => 'Experiences retrieved successfully',
+    'failed_to_retrieve_experiences' => 'Failed to retrieve experiences',
+    'experience_created_successfully' => 'Experience created successfully',
+    'failed_to_create_experience' => 'Failed to create experience',
+    'experience_retrieved_successfully' => 'Experience retrieved successfully',
+    'failed_to_retrieve_experience' => 'Failed to retrieve experience',
+    'experience_updated_successfully' => 'Experience updated successfully',
+    'failed_to_update_experience' => 'Failed to update experience',
+    'experience_deleted_successfully' => 'Experience deleted successfully',
+    'failed_to_delete_experience' => 'Failed to delete experience',
+    'experience_not_found' => 'Experience not found',
+
+    // Education
+    'education_retrieved_successfully' => 'Education records retrieved successfully',
+    'failed_to_retrieve_education' => 'Failed to retrieve education records',
+    'education_created_successfully' => 'Education created successfully',
+    'failed_to_create_education' => 'Failed to create education',
+    'education_updated_successfully' => 'Education updated successfully',
+    'failed_to_update_education' => 'Failed to update education',
+    'education_deleted_successfully' => 'Education deleted successfully',
+    'failed_to_delete_education' => 'Failed to delete education',
+    'education_not_found' => 'Education not found',
 ];

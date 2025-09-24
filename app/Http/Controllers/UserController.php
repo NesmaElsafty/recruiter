@@ -159,16 +159,18 @@ class UserController extends Controller
     {
         try {
             $user = $this->userService->getUserById($id);
-            return response()->json([
-                'success' => true,
-                'data' => new UserResource($user)
-            ]);
+            $user->load(['city', 'major', 'skills', 'experiences', 'education']);
+            return LocalizationHelper::successResponse(
+                'user_retrieved_successfully',
+                new UserResource($user),
+                200
+            );
         } catch (Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to retrieve user',
-                'error' => $e->getMessage()
-            ], 500);
+            return LocalizationHelper::errorResponse(
+                'failed_to_retrieve_user',
+                $e->getMessage(),
+                500
+            );
         }
     }
 
@@ -190,17 +192,18 @@ class UserController extends Controller
             $userData = $request->all();
             $userData['password'] = Hash::make('123456');
             $user = $this->userService->createUser($userData);
-            return response()->json([
-                'success' => true,
-                'message' => 'User created successfully',
-                'data' => new UserResource($user)
-            ]);
+            $user->load(['city', 'major', 'skills', 'experiences', 'education']);
+            return LocalizationHelper::successResponse(
+                'user_created_successfully',
+                new UserResource($user),
+                201
+            );
         } catch (Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to create user',
-                'error' => $e->getMessage()
-            ], 500);
+            return LocalizationHelper::errorResponse(
+                'failed_to_create_user',
+                $e->getMessage(),
+                500
+            );
         }
     }
 
@@ -210,17 +213,18 @@ class UserController extends Controller
         try {
             $userData = $request->all();
             $user = $this->userService->updateUser($id, $userData);
-            return response()->json([
-                'success' => true,
-                'message' => 'User updated successfully',
-                'data' => new UserResource($user)
-            ]);
+            $user->load(['city', 'major', 'skills', 'experiences', 'education']);
+            return LocalizationHelper::successResponse(
+                'user_updated_successfully',
+                new UserResource($user),
+                200
+            );
         } catch (Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to update user',
-                'error' => $e->getMessage()
-            ], 500);
+            return LocalizationHelper::errorResponse(
+                'failed_to_update_user',
+                $e->getMessage(),
+                500
+            );
         }
     }
 
@@ -229,16 +233,17 @@ class UserController extends Controller
     {
         try {
             $this->userService->deleteUser($id);
-            return response()->json([
-                'success' => true,
-                'message' => 'User deleted successfully'
-            ]);
+                return LocalizationHelper::successResponse(
+                'user_deleted_successfully',
+                null,
+                200
+            );
         } catch (Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to delete user',
-                'error' => $e->getMessage()
-            ], 500);
+            return LocalizationHelper::errorResponse(
+                'failed_to_delete_user',
+                $e->getMessage(),
+                500
+            );
         }
     }
     
@@ -280,17 +285,18 @@ class UserController extends Controller
                     $result = $this->userService->bulkRecruiterConfirmation($request->all());
                     break;
             }
-            return response()->json([
-                'success' => true,
-                'message' => 'Bulk actions performed successfully',
-                'url' => $request->action == 'export' ? $result: null
-            ]);
+            return LocalizationHelper::successResponse(
+            'bulk_actions_performed_successfully',
+                null,
+                200,
+                ['url' => $request->action == 'export' ? $result: null]
+            );
         } catch (Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to bulk actions',
-                'error' => $e->getMessage()
-            ], 500);
+            return LocalizationHelper::errorResponse(
+                'failed_to_bulk_actions',
+                $e->getMessage(),
+                500
+            );  
         }
     }
 
@@ -307,21 +313,22 @@ class UserController extends Controller
             $user->addMediaFromRequest('image')
                 ->toMediaCollection('avatar');
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Image uploaded successfully',
-                'data' => [
+            return LocalizationHelper::successResponse(
+                    'image_uploaded_successfully',
+                null,
+                200,
+                [
                     'url' => $user->getFirstMediaUrl('avatar'),
                     'thumb' => $user->getFirstMediaUrl('avatar', 'thumb'),
                     'medium' => $user->getFirstMediaUrl('avatar', 'medium'),
                 ]
-            ]);
+            );
         } catch (Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to upload image',
-                'error' => $e->getMessage()
-            ], 500);
+            return LocalizationHelper::errorResponse(
+                'failed_to_upload_image',
+                $e->getMessage(),
+                500
+            );  
         }
     }
 
@@ -338,21 +345,22 @@ class UserController extends Controller
             $user->addMediaFromRequest('resume')
                 ->toMediaCollection('resume');
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Resume uploaded successfully',
-                'data' => [
+            return LocalizationHelper::successResponse(
+                'resume_uploaded_successfully',
+                null,
+                200,
+                [
                     'url' => $user->getFirstMediaUrl('resume'),
                     'name' => $user->getFirstMedia('resume')->name,
                     'size' => $user->getFirstMedia('resume')->size,
                 ]
-            ]);          
+            );
         } catch (Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to upload resume',
-                'error' => $e->getMessage()
-            ], 500);
+            return LocalizationHelper::errorResponse(
+                'failed_to_upload_resume',
+                $e->getMessage(),
+                500
+            );  
         }
     }
 
@@ -379,17 +387,22 @@ class UserController extends Controller
                 ];
             }
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Documents uploaded successfully',
-                'data' => $uploadedDocuments
-            ]);
+            return LocalizationHelper::successResponse(
+                'documents_uploaded_successfully',
+                null,
+                200,
+                [
+                    'url' => $user->getFirstMediaUrl('documents'),
+                    'name' => $user->getFirstMedia('documents')->name,
+                    'size' => $user->getFirstMedia('documents')->size,
+                ]
+            );
         } catch (Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to upload documents',
-                'error' => $e->getMessage()
-            ], 500);
+                return LocalizationHelper::errorResponse(
+                'failed_to_upload_documents',
+                $e->getMessage(),
+                500
+            );
         }
     }
 
@@ -400,24 +413,26 @@ class UserController extends Controller
             $media = $user->getMedia()->find($mediaId);
             
             if (!$media) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Media not found'
-                ], 404);
+                return LocalizationHelper::errorResponse(
+                    'media_not_found',
+                    'Media not found',
+                    404
+                );
             }
 
             $media->delete();
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Media deleted successfully'
-            ]);
+            return LocalizationHelper::successResponse(
+                'media_deleted_successfully',
+                null,
+                200
+            );
         } catch (Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to delete media',
-                'error' => $e->getMessage()
-            ], 500);
+            return LocalizationHelper::errorResponse(
+                'failed_to_delete_media',
+                $e->getMessage(),
+                500
+            );
         }
     }
 }

@@ -21,7 +21,9 @@ use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\RetrievalController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ReportController;
-    
+use App\Http\Controllers\ExperienceController;
+use App\Http\Controllers\EducationController;
+use App\Http\Controllers\SkillController;
 // Public routes
 
 // Auth routes
@@ -85,6 +87,26 @@ Route::middleware('auth:api')->group(function () {
     Route::get('messages/{id}', [MessageController::class, 'show']);
     Route::post('messages', [MessageController::class, 'store']);
     Route::post('messages/bulkActions', [MessageController::class, 'bulkActions']);
+
+    // experiences
+    Route::get('experiences', [ExperienceController::class, 'index']);
+    Route::post('experiences', [ExperienceController::class, 'store']);
+    Route::get('experiences/{id}', [ExperienceController::class, 'show']);
+    Route::put('experiences/{id}', [ExperienceController::class, 'update']);
+    Route::delete('experiences/{id}', [ExperienceController::class, 'destroy']);
+
+    // education
+    Route::get('education', [EducationController::class, 'index']);
+    Route::post('education', [EducationController::class, 'store']);
+    Route::get('education/{id}', [EducationController::class, 'show']);
+    Route::put('education/{id}', [EducationController::class, 'update']);
+    Route::delete('education/{id}', [EducationController::class, 'destroy']);
+
+    // skills
+    Route::get('skills', [SkillController::class, 'index']);
+    Route::post('skills', [SkillController::class, 'store']);
+    Route::put('skills/{id}', [SkillController::class, 'update']);
+    Route::delete('skills/{id}', [SkillController::class, 'destroy']);
 
     // interview routes
     Route::get('interviews', [InterviewController::class, 'index']);
