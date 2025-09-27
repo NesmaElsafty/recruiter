@@ -17,6 +17,7 @@ use App\Mail\OtpMail;
 use Exception;
 use App\Helpers\LocalizationHelper;
 use App\Services\UserService;
+use App\Models\Major;
 
 class AuthController extends Controller
 {
@@ -40,12 +41,18 @@ class AuthController extends Controller
                 'phone' => 'required|string|max:255|unique:users,phone',
                 'city_id' => 'nullable|exists:cities,id',
                 'major_id' => 'nullable|exists:majors,id',
+                'major_name' => 'nullable|string|max:255',
                 'company_name' => 'nullable|string|max:255',
                 'job_title' => 'nullable|string|max:255',
             ]);    
             $userData = $request->all();
             $userData['password'] = Hash::make($userData['password']);
             
+            if($request->major_id != ""){
+                $major = Major::find($request->major_id);
+                $userData['major_id'] = $major->id;
+                $userData['major_name'] = LocalizationHelper::getLocalizedFieldName($major->name_en, $major->name_ar);
+            }
             $user = User::create($userData);
             $token = $user->createToken('auth-token');
 

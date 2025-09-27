@@ -155,4 +155,27 @@ class User extends Authenticatable implements HasMedia
         return $this->morphMany(Skill::class, 'skillable');
     }
 
+    // experiences
+    public function experiences()
+    {
+        return $this->hasMany(Experience::class);
+    }
+
+    // education
+    public function education()
+    {
+        return $this->hasMany(Education::class);
+    }
+
+    // total period
+    public function totalPeriod()
+    {
+        return $this->experiences()->sum('total_period');
+    }
+
+    // favorites
+    public function favoriteCandidates()
+    {
+        return $this->hasMany(Favorite::class, 'candidate_id');
+    }
 }

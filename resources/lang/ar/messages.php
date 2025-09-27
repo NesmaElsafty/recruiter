@@ -354,4 +354,18 @@ return [
     'education_deleted_successfully' => 'تم حذف سجل التعليم بنجاح',
     'failed_to_delete_education' => 'فشل في حذف سجل التعليم',
     'education_not_found' => 'سجل التعليم غير موجود',
+
+    // المرشحين
+    'candidates_retrieved_successfully' => 'تم جلب المرشحين بنجاح',
+    'failed_to_retrieve_candidates' => 'فشل في جلب المرشحين',
+    'candidate_retrieved_successfully' => 'تم جلب المرشح بنجاح',
+    'failed_to_retrieve_candidate' => 'فشل في جلب المرشح',
+    'candidate_not_found' => 'المرشح غير موجود',
+    'candidate_added_to_favorites_successfully' => 'تم إضافة المرشح إلى المفضلة بنجاح',
+    'failed_to_add_candidate_to_favorites' => 'فشل في إضافة المرشح إلى المفضلة',
+    'candidate_not_found_in_favorites' => 'المرشح غير موجود في المفضلة',
+    'candidate_removed_from_favorites_successfully' => 'تم إزالة المرشح من المفضلة بنجاح',
+    'failed_to_remove_candidate_from_favorites' => 'فشل في إزالة المرشح من المفضلة',
+    'favorites_retrieved_successfully' => 'تم جلب المفضلة بنجاح',
+    'failed_to_retrieve_favorites' => 'فشل في جلب المفضلة',
 ];

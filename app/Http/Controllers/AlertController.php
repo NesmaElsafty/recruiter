@@ -100,4 +100,32 @@ class AlertController extends Controller
             ]);
         }
     }
+
+    // delete
+    public function destroy(Alert $alert)
+    {
+        try{
+            $user = auth('api')->user();
+            if((int)$alert->user_id !== (int)$user->id){
+                return LocalizationHelper::errorResponse(
+                    'alert_not_found',
+                    'You are not authorized to delete this alert',
+                    404
+                );
+            }
+        $alert->delete();
+        return LocalizationHelper::successResponse(
+            'alert_deleted_successfully',
+            null,
+            200
+        );
+        }catch(\Exception $e){
+            return LocalizationHelper::errorResponse(
+                'alert_not_found',
+                $e->getMessage(),
+                null,
+                500
+            );
+        }
+    }
 }

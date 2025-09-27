@@ -354,4 +354,18 @@ return [
     'education_deleted_successfully' => 'Education deleted successfully',
     'failed_to_delete_education' => 'Failed to delete education',
     'education_not_found' => 'Education not found',
+
+    // Candidate related
+    'candidates_retrieved_successfully' => 'Candidates retrieved successfully',
+    'failed_to_retrieve_candidates' => 'Failed to retrieve candidates',
+    'candidate_retrieved_successfully' => 'Candidate retrieved successfully',
+    'failed_to_retrieve_candidate' => 'Failed to retrieve candidate',
+    'candidate_not_found' => 'Candidate not found',
+    'candidate_added_to_favorites_successfully' => 'Candidate added to favorites successfully',
+    'failed_to_add_candidate_to_favorites' => 'Failed to add candidate to favorites',
+    'candidate_not_found_in_favorites' => 'Candidate not found in favorites',
+    'candidate_removed_from_favorites_successfully' => 'Candidate removed from favorites successfully',
+    'failed_to_remove_candidate_from_favorites' => 'Failed to remove candidate from favorites',
+    'favorites_retrieved_successfully' => 'Favorites retrieved successfully',
+    'failed_to_retrieve_favorites' => 'Failed to retrieve favorites',
 ];

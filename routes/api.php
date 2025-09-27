@@ -24,6 +24,7 @@ use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ExperienceController;
 use App\Http\Controllers\EducationController;
 use App\Http\Controllers\SkillController;
+use App\Http\Controllers\CandidateController;
 // Public routes
 
 // Auth routes
@@ -60,12 +61,20 @@ Route::get('contactUs', [ContactUsController::class, 'index']);
 Route::get('plans', [PlanController::class, 'index']);
 Route::get('plans/{id}', [PlanController::class, 'show']);
 
+// candidates routes
+Route::get('candidates', [CandidateController::class, 'index']);
+Route::get('candidates/{id}', [CandidateController::class, 'show']);
+
+
 // Protected routes (require authentication)
 Route::middleware('auth:api')->group(function () {
     
     Route::put('contactUs', [ContactUsController::class, 'update']);
     Route::resource('socialMedia', SocialMediaController::class);
     
+    Route::post('addToFavorites', [CandidateController::class, 'addToFavorites']);
+    Route::post('removeFromFavorites', [CandidateController::class, 'removeFromFavorites']);
+    Route::get('getFavorites', [CandidateController::class, 'getFavorites']);
     // General Auth routes
     Route::prefix('auth')->group(function () {
         Route::get('profile', [AuthController::class, 'profile']);

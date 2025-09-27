@@ -20,6 +20,8 @@ class UserResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $locale = app()->getLocale();
+        $majorName = $this->major_name ?? $this->major?->{"name_{$locale}"} ?? $this->major?->name_en;
         return [
             'id' => $this->id,
             'fname' => $this->fname,
@@ -47,6 +49,7 @@ class UserResource extends JsonResource
             'major' => $this->whenLoaded('major', function () {
                 return new MajorResource($this->major);
             }),
+            'major_name' => $this->major_name,
 
             'feedbacks' => $this->whenLoaded('feedbacks', function () {
                 return FeedbackResource::collection($this->feedbacks);
