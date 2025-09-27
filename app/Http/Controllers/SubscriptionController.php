@@ -45,7 +45,7 @@ class SubscriptionController extends Controller
                     'stats' => $stats
                 ]
             );
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return LocalizationHelper::errorResponse(
                 'failed_to_retrieve_subscriptions',
                 $e->getMessage(),
@@ -55,19 +55,68 @@ class SubscriptionController extends Controller
         
     }
 
+    // active
+    public function active(Request $request)
+    {
+        try{
+        $subscription = $this->subscriptionService->getUserActiveSubscription();
+        if(!$subscription){
+            return LocalizationHelper::errorResponse(
+                'subscription_active_not_found',
+                null,
+                404
+            );
+        }
+        return LocalizationHelper::successResponse(
+            'subscription_active_retrieved_successfully',
+            new SubscriptionResource($subscription),
+            200
+        );
+    }catch(Exception $e){
+        return LocalizationHelper::errorResponse(
+            'failed_to_retrieve_subscription_active',
+            $e->getMessage(),
+            500
+        );
+    }
+    }
+
+    // history
+    public function history(Request $request)
+    {
+        try{
+        $subscription = $this->subscriptionService->getUserSubscriptionsHistory($request->all())->paginate(10);
+        // dd($subscription);
+        return LocalizationHelper::successResponse(
+            'subscription_history_retrieved_successfully',
+            SubscriptionResource::collection($subscription),
+            200,
+            ['pagination' => PaginationHelper::paginate($subscription)]
+        );      
+        }catch(Exception $e){
+            return LocalizationHelper::errorResponse(
+                'failed_to_retrieve_subscription_history',
+                $e->getMessage(),
+                500
+            );
+        }
+    }
+
     // show
     public function show(Request $request)
     {
-        try {
+        try {   
             $user = auth('api')->user();
-            if($user->type != 'admin' || $subscription->user_id != $user->id) {
+            $subscription = $this->subscriptionService->getSubscriptionById($request->id);
+            
+            if($user->type != 'admin' && $subscription->user_id != $user->id) {
                 return LocalizationHelper::errorResponse(
                     'not_authorized_to_view_subscription',
                     null,
                     401
                 );
             }
-            $subscription = $this->subscriptionService->getSubscriptionById($request->id);
+            
             return LocalizationHelper::successResponse(
                 'subscription_retrieved_successfully',
                 new SubscriptionResource($subscription),
@@ -154,7 +203,7 @@ class SubscriptionController extends Controller
             ]);
             $subscription = $this->subscriptionService->getSubscriptionById($request->subscription_id);
             $user = auth('api')->user();
-            if($user->type != 'admin' || $subscription->user_id != $user->id) {
+            if($user->type != 'admin' && $subscription->user_id != $user->id) {
                 return LocalizationHelper::errorResponse(
                     'not_authorized_to_cancel_subscription',
                     null,
@@ -185,7 +234,7 @@ class SubscriptionController extends Controller
             ]);
             $subscription = $this->subscriptionService->getSubscriptionById($request->subscription_id);
             $user = auth('api')->user();
-            if($user->type != 'admin' || $subscription->user_id != $user->id) {
+            if($user->type != 'admin' && $subscription->user_id != $user->id) {
                 return LocalizationHelper::errorResponse(
                     'not_authorized_to_payment_confirmation',
                     null,

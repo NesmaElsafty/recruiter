@@ -21,7 +21,7 @@ class SubscriptionService
         $this->locale = app()->getLocale();
     }
 
-    public function getAllSubscriptions(array $data = []): Builder
+    public function getAllSubscriptions(array $data = [])
     {
         $query = Subscription::with(['user', 'plan']);
 
@@ -67,10 +67,73 @@ class SubscriptionService
         return $query;
     }
 
+    // get user subscriptions history
+    public function getUserSubscriptionsHistory($data)
+    {
+        $user = auth('api')->user();
+        $query = Subscription::query();
+        $query->where('user_id', $user->id)->where('status', '!=', 'active')->orderBy('created_at', 'desc');
+
+        if(isset($data['search']) && !empty($data['search'])) {
+            $query->where('subscription_id', 'like', "%{$data['search']}%")
+            ->orWhere('paid_amount', 'like', "%{$data['search']}%")
+            ->orWhere('start_date', 'like', "%{$data['search']}%")
+            ->orWhere('end_date', 'like', "%{$data['search']}%")
+            ->orWhereHas('plan', function ($planQuery) use ($data) {
+                $planQuery->where('name_en', 'like', "%{$data['search']}%")
+                         ->orWhere('name_ar', 'like', "%{$data['search']}%");
+            });
+        }
+        
+        if(isset($data['plan_duration']) && !empty($data['plan_duration'])) {
+            $query->whereHas('plan', function ($planQuery) use ($data) {
+                $planQuery->where('duration_type', $data['plan_duration']);
+            });
+        }
+        
+        if(isset($data['payment_method']) && !empty($data['payment_method'])) {
+            $query->where('payment_method', $data['payment_method']);
+        }
+        
+        if(isset($data['sorted_by']) && !empty($data['sorted_by'])) {
+            switch ($data['sorted_by']) {
+            case 'plan_name':
+                $query->join('plans', 'subscriptions.plan_id', '=', 'plans.id')
+                // use localization helper
+                      ->orderBy('plans.{"name_{$this->locale}"}', 'asc')
+                      ->orderBy('plans.name_ar', 'asc')
+                      ->select('subscriptions.*');
+                break;
+            case 'paid_amount':
+                $query->orderByRaw('CAST(paid_amount AS DECIMAL(10,2)) DESC');
+                break;
+            case 'oldest':
+                $query->orderBy('created_at', 'asc');
+                break;
+            case 'newest':
+            default:
+                $query->orderBy('created_at', 'desc');
+                break;
+        }
+        }
+        return $query;
+    }
+
+    // get user active subscription
+    public function getUserActiveSubscription()
+    {
+        $user = auth('api')->user();
+        $subscription = Subscription::with(['user', 'plan'])
+            ->where('user_id', $user->id)
+            ->where('status', 'active')
+            ->first();
+        return $subscription;
+    }
+
     /**
      * Get subscriptions by user ID
      */
-    public function getAllSubscriptionsByUserId(int $userId): Builder
+    public function getAllSubscriptionsByUserId(int $userId)
     {
         return Subscription::with(['user', 'plan'])
             ->where('user_id', $userId)
@@ -214,7 +277,7 @@ class SubscriptionService
     /**
      * Get subscription by ID
      */
-    public function getSubscriptionById(int $id): ?Subscription
+    public function getSubscriptionById(int $id)
     {
         return Subscription::with(['user', 'plan'])->find($id);
     }
@@ -251,6 +314,7 @@ class SubscriptionService
     public function cancelSubscription($id)
     {
         $subscription = Subscription::find($id);
+        $subscription->status = 'cancelled';
         $subscription->is_active = false;
         $subscription->end_date = now();
         $subscription->save();
@@ -264,6 +328,12 @@ class SubscriptionService
         $subscription = Subscription::find($id);
         $plan = Plan::find($subscription->plan_id);
 
+        $subscriptions = Subscription::where('user_id', $subscription->user_id)->where('status', 'active')->where('id', '!=', $id)->get();
+        foreach($subscriptions as $subscription) {
+        $subscription->status = 'expired';
+        $subscription->save();
+        }
+
         // calculate end date
         $endDate = now();
         if ($plan->duration_type === 'monthly') {
@@ -272,6 +342,7 @@ class SubscriptionService
             $endDate->addYears($plan->duration);
         }
 
+        $subscription->status = 'active';
         $subscription->is_active = true;
         $subscription->start_date = now();
         $subscription->end_date = $endDate;
@@ -280,11 +351,6 @@ class SubscriptionService
         return $subscription;
     }
 
-
-
-    /**
-     * Update subscription
-     */
     public function updateSubscription(int $id, array $data): bool
     {
         $subscription = Subscription::find($id);
@@ -348,7 +414,7 @@ class SubscriptionService
             ];
         })->toArray();
 
-// Generate filename
+    // Generate filename
         $filename = 'subscriptions_export_' . now()->format('Y-m-d_H-i-s') . '.csv';
         $currentUser = auth('api')->user();
         $media = ExportHelper::exportToMedia($data, $currentUser, 'exports', $filename);

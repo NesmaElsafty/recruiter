@@ -114,12 +114,17 @@ Route::middleware('auth:api')->group(function () {
 
 
     // subscription routes
-    Route::get('subscriptions', [SubscriptionController::class, 'index']);
-    Route::post('subscriptions', [SubscriptionController::class, 'store']);
-    Route::get('subscriptions/{id}', [SubscriptionController::class, 'show']);
-    Route::post('subscriptions/cancel', [SubscriptionController::class, 'cancel']);
-    Route::post('subscriptions/paymentConfirmation', [SubscriptionController::class, 'paymentConfirmation']);
-    
+    // use prefix
+    Route::prefix('subscriptions')->group(function () {
+        Route::get('/', [SubscriptionController::class, 'index']);
+        Route::post('/', [SubscriptionController::class, 'store']);
+        Route::get('/{id}', [SubscriptionController::class, 'show']);
+    });
+    Route::post('paymentConfirmation', [SubscriptionController::class, 'paymentConfirmation']);
+    Route::get('/subscriptionsHistory', [SubscriptionController::class, 'history']);
+    Route::get('/subscriptionsCurrentActive', [SubscriptionController::class, 'active']);
+    Route::post('/subscriptionsCancel', [SubscriptionController::class, 'cancel']);
+
     // retrieval routes
     Route::get('retrievals', [RetrievalController::class, 'index']);
     Route::get('retrievals/{id}', [RetrievalController::class, 'show']);

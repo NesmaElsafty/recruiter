@@ -175,6 +175,18 @@ return [
     'subscription_activated_successfully' => 'Subscription activated successfully',
     'subscription_deactivated_successfully' => 'Subscription deactivated successfully',
     'failed_to_toggle_subscription' => 'Failed to toggle subscription status',
+    'subscription_active_retrieved_successfully' => 'Active subscription retrieved successfully',
+    'subscription_active_not_found' => 'No active subscription found',
+    'failed_to_retrieve_subscription_active' => 'Failed to retrieve active subscription',
+    'subscription_history_retrieved_successfully' => 'Subscription history retrieved successfully',
+    'failed_to_retrieve_subscription_history' => 'Failed to retrieve subscription history',
+    'not_authorized_to_view_subscription' => 'You are not authorized to view this subscription',
+    'not_authorized_to_cancel_subscription' => 'You are not authorized to cancel this subscription',
+    'subscription_cancelled_successfully' => 'Subscription cancelled successfully',
+    'failed_to_cancel_subscription' => 'Failed to cancel subscription',
+    'not_authorized_to_payment_confirmation' => 'You are not authorized to confirm payment for this subscription',
+    'payment_confirmed_successfully' => 'Payment confirmed successfully',
+    'failed_to_payment_confirmation' => 'Failed to confirm payment',
     
     // Retrieval related
     'retrievals_retrieved_successfully' => 'Retrievals retrieved successfully',

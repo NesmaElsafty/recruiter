@@ -16,7 +16,7 @@ class SubscriptionResource extends JsonResource
     public function toArray(Request $request): array
     {
         $locale = app()->getLocale();
-        
+        // dd($this);
         return [
             'id' => $this->id,
             'subscription_id' => $this->subscription_id,

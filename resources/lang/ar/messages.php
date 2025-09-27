@@ -50,6 +50,18 @@ return [
     'subscription_activated_successfully' => 'تم تفعيل الاشتراك بنجاح',
     'subscription_deactivated_successfully' => 'تم إلغاء تفعيل الاشتراك بنجاح',
     'failed_to_toggle_subscription' => 'فشل في تغيير حالة الاشتراك',
+    'subscription_active_retrieved_successfully' => 'تم جلب الاشتراك النشط بنجاح',
+    'subscription_active_not_found' => 'لم يتم العثور على اشتراك نشط',
+    'failed_to_retrieve_subscription_active' => 'فشل في جلب الاشتراك النشط',
+    'subscription_history_retrieved_successfully' => 'تم جلب تاريخ الاشتراكات بنجاح',
+    'failed_to_retrieve_subscription_history' => 'فشل في جلب تاريخ الاشتراكات',
+    'not_authorized_to_view_subscription' => 'غير مصرح لك بعرض هذا الاشتراك',
+    'not_authorized_to_cancel_subscription' => 'غير مصرح لك بإلغاء هذا الاشتراك',
+    'subscription_cancelled_successfully' => 'تم إلغاء الاشتراك بنجاح',
+    'failed_to_cancel_subscription' => 'فشل في إلغاء الاشتراك',
+    'not_authorized_to_payment_confirmation' => 'غير مصرح لك بتأكيد الدفع لهذا الاشتراك',
+    'payment_confirmed_successfully' => 'تم تأكيد الدفع بنجاح',
+    'failed_to_payment_confirmation' => 'فشل في تأكيد الدفع',
     
     // Retrieval related
     'retrievals_retrieved_successfully' => 'تم جلب طلبات الاسترداد بنجاح',
