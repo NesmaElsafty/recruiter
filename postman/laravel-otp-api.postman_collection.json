@@ -1,0 +1,204 @@
+{
+  "info": {
+    "name": "Laravel OTP Auth (Email) – API Tests",
+    "_postman_id": "b9b3e2f8-6a1d-4f7a-8a75-otp-collection",
+    "description": "مجموعة طلبات لاختبار مسارات OTP عبر الإيميل: /sendOtp, /verifyOtp, /resetPassword.\nتأكد من ضبط المتغيرات (base_url, test_email, context, otp, reset_token, new_password).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Send OTP",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"{{test_email}}\",\n  \"context\": \"{{context}}\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/sendOtp",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "sendOtp"
+          ]
+        },
+        "description": "إرسال كود OTP للإيميل المحدد حسب السياق (register أو forgot_password)."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code is 200 or 201 or 202', function () {",
+              "  pm.expect([200,201,202]).to.include(pm.response.code);",
+              "});",
+              "try {",
+              "  const json = pm.response.json();",
+              "  pm.test('Response has success', function () {",
+              "    pm.expect(json).to.have.property('success');",
+              "  });",
+              "} catch(e) {",
+              "  console.warn('Non-JSON response');",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Verify OTP",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"{{test_email}}\",\n  \"otp\": \"{{otp}}\",\n  \"context\": \"{{context}}\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/verifyOtp",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "verifyOtp"
+          ]
+        },
+        "description": "تحقق من كود OTP. لو كان السياق forgot_password سيرجع reset_token قصير العمر."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code is 200', function () {",
+              "  pm.expect(pm.response.code).to.eql(200);",
+              "});",
+              "let json = {};",
+              "try { json = pm.response.json(); } catch(e) {}",
+              "pm.test('success=true', function () {",
+              "  pm.expect(json.success).to.be.true;",
+              "});",
+              "// لو السياق forgot_password خزن reset_token في البيئة",
+              "if (pm.collectionVariables.get('context') === 'forgot_password' || pm.environment.get('context') === 'forgot_password') {",
+              "  if (json.reset_token) {",
+              "    pm.environment.set('reset_token', json.reset_token);",
+              "    pm.collectionVariables.set('reset_token', json.reset_token);",
+              "  }",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Reset Password (after verify)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"reset_token\": \"{{reset_token}}\",\n  \"new_password\": \"{{new_password}}\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/resetPassword",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "resetPassword"
+          ]
+        },
+        "description": "تغيير كلمة المرور باستخدام reset_token الذي تم الحصول عليه من verifyOtp في حالة forgot_password."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code is 200', function () {",
+              "  pm.expect(pm.response.code).to.eql(200);",
+              "});",
+              "let json = {};",
+              "try { json = pm.response.json(); } catch(e) {}",
+              "pm.test('success=true', function () {",
+              "  pm.expect(json.success).to.be.true;",
+              "});"
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// يمكن إضافة إعدادات عامة قبل أي طلب هنا إن لزم"
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// اختبارات عامة بعد كل رد (اختياري)"
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8000/api",
+      "type": "string"
+    },
+    {
+      "key": "test_email",
+      "value": "user@example.com",
+      "type": "string"
+    },
+    {
+      "key": "context",
+      "value": "register",
+      "type": "string"
+    },
+    {
+      "key": "otp",
+      "value": "123456",
+      "type": "string"
+    },
+    {
+      "key": "reset_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "new_password",
+      "value": "StrongPass123!",
+      "type": "string"
+    }
+  ]
+}

@@ -25,6 +25,8 @@ use App\Http\Controllers\ExperienceController;
 use App\Http\Controllers\EducationController;
 use App\Http\Controllers\SkillController;
 use App\Http\Controllers\CandidateController;
+use App\Http\Controllers\OtpController;
+
 // Public routes
 
 // Auth routes
@@ -40,6 +42,11 @@ Route::get('cities/search/{query}', [CityController::class, 'search']);
 Route::get('majors', [MajorController::class, 'index']);
 Route::get('majors/{major}', [MajorController::class, 'show']);
 Route::get('majors/search/{query}', [MajorController::class, 'search']);
+
+
+Route::post('/sendOtp', [OtpController::class, 'send']);
+Route::post('/verifyOtp', [OtpController::class, 'verify']);
+Route::post('/resetPassword', [OtpController::class, 'resetPassword']);
 
 
 // Media upload routes
