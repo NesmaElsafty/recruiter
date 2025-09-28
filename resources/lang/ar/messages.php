@@ -202,6 +202,19 @@ return [
     'major_deleted_successfully' => 'تم حذف التخصص بنجاح',
     'failed_to_delete_major' => 'فشل في حذف التخصص',
     
+    // SubMajor related
+    'sub_majors_retrieved_successfully' => 'تم جلب التخصصات الفرعية بنجاح',
+    'failed_to_retrieve_sub_majors' => 'فشل في جلب التخصصات الفرعية',
+    'sub_major_created_successfully' => 'تم إنشاء التخصص الفرعي بنجاح',
+    'failed_to_create_sub_major' => 'فشل في إنشاء التخصص الفرعي',
+    'sub_major_updated_successfully' => 'تم تحديث التخصص الفرعي بنجاح',
+    'failed_to_update_sub_major' => 'فشل في تحديث التخصص الفرعي',
+    'sub_major_deleted_successfully' => 'تم حذف التخصص الفرعي بنجاح',
+    'failed_to_delete_sub_major' => 'فشل في حذف التخصص الفرعي',
+    'sub_major_retrieved_successfully' => 'تم جلب التخصص الفرعي بنجاح',
+    'failed_to_retrieve_sub_major' => 'فشل في جلب التخصص الفرعي',
+    'sub_major_not_found' => 'التخصص الفرعي غير موجود',
+    
     // Field names
     'id' => 'المعرف',
     'name' => 'الاسم',

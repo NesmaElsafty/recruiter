@@ -161,6 +161,19 @@ return [
     'major_deleted_successfully' => 'Major deleted successfully',
     'failed_to_delete_major' => 'Failed to delete major',
     
+    // SubMajor related
+    'sub_majors_retrieved_successfully' => 'Sub majors retrieved successfully',
+    'failed_to_retrieve_sub_majors' => 'Failed to retrieve sub majors',
+    'sub_major_created_successfully' => 'Sub major created successfully',
+    'failed_to_create_sub_major' => 'Failed to create sub major',
+    'sub_major_updated_successfully' => 'Sub major updated successfully',
+    'failed_to_update_sub_major' => 'Failed to update sub major',
+    'sub_major_deleted_successfully' => 'Sub major deleted successfully',
+    'failed_to_delete_sub_major' => 'Failed to delete sub major',
+    'sub_major_retrieved_successfully' => 'Sub major retrieved successfully',
+    'failed_to_retrieve_sub_major' => 'Failed to retrieve sub major',
+    'sub_major_not_found' => 'Sub major not found',
+    
     // Subscription related
     'subscriptions_retrieved_successfully' => 'Subscriptions retrieved successfully',
     'failed_to_retrieve_subscriptions' => 'Failed to retrieve subscriptions',

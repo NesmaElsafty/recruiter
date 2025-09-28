@@ -26,6 +26,7 @@ use App\Http\Controllers\EducationController;
 use App\Http\Controllers\SkillController;
 use App\Http\Controllers\CandidateController;
 use App\Http\Controllers\OtpController;
+use App\Http\Controllers\SubMajorController;
 
 // Public routes
 
@@ -72,6 +73,9 @@ Route::get('plans/{id}', [PlanController::class, 'show']);
 Route::get('candidates', [CandidateController::class, 'index']);
 Route::get('candidates/{id}', [CandidateController::class, 'show']);
 
+// sub majors routes
+Route::get('subMajors', [SubMajorController::class, 'index']);
+Route::get('subMajors/{id}', [SubMajorController::class, 'show']);
 
 // Protected routes (require authentication)
 Route::middleware('auth:api')->group(function () {
@@ -214,6 +218,12 @@ Route::middleware('auth:api')->group(function () {
             Route::get('getInterviewPerformanceByDateRange', [ReportController::class, 'getInterviewPerformanceByDateRange']);
             Route::get('getSubscriptionsByDateRange', [ReportController::class, 'getSubscriptionsByDateRange']);
         });
+    
+        // sub majors routes
+        Route::post('subMajors', [SubMajorController::class, 'store']);
+        Route::put('subMajors/{id}', [SubMajorController::class, 'update']);
+        Route::delete('subMajors/{id}', [SubMajorController::class, 'destroy']);
+
     });
 });
 
