@@ -368,4 +368,13 @@ return [
     'failed_to_remove_candidate_from_favorites' => 'فشل في إزالة المرشح من المفضلة',
     'favorites_retrieved_successfully' => 'تم جلب المفضلة بنجاح',
     'failed_to_retrieve_favorites' => 'فشل في جلب المفضلة',
+    
+    // OTP related
+    'no_account_found' => 'لا يوجد حساب بهذا العنوان الإلكتروني',
+    'otp_sent' => 'تم إرسال رمز التحقق إلى بريدك الإلكتروني',
+    'invalid_otp' => 'رمز التحقق غير صحيح',
+    'email_verified' => 'تم التحقق من البريد الإلكتروني بنجاح',
+    'reset_token_generated' => 'تم إنشاء رمز إعادة تعيين كلمة المرور',
+    'invalid_reset_token' => 'رمز إعادة التعيين غير صحيح أو منتهي الصلاحية',
+    'password_updated' => 'تم تحديث كلمة المرور بنجاح',
 ];

@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\Rule;
+use App\Helpers\LocalizationHelper;
 
 class OtpController extends Controller
 {
@@ -23,20 +24,19 @@ class OtpController extends Controller
             'context' => ['required', Rule::in(['register','forgot_password'])],
         ]);
 
-        // تحقق منطقي حسب السياق:
         if ($data['context'] === 'register') {
-            // ممكن تتأكد أن الإيميل غير مُسجل مسبقاً لو تحب
         } else { // forgot_password
             if (!User::where('email', $data['email'])->exists()) {
-                return response()->json(['success'=>true, 'message'=>'تم الإرسال إن وُجد حساب.'], 200);
-                // لا نُفصِح إن كان الإيميل موجود لحماية الخصوصية
+                $message = LocalizationHelper::getMessage('no_account_found');
+                return response()->json(['success'=>true, 'message'=>$message], 200);
             }
         }
 
         $code = $this->otpService->generateAndStore($data['email'], $data['context']);
         Mail::to($data['email'])->send(new OtpMail($code, $data['context']));
 
-        return response()->json(['success'=>true, 'message'=>'تم إرسال رمز التحقق للبريد.']);
+        $message = LocalizationHelper::getMessage('otp_sent');
+        return response()->json(['success'=>true, 'message'=>$message]);
     }
 
     public function verify(Request $request)
@@ -49,17 +49,18 @@ class OtpController extends Controller
 
         $ok = $this->otpService->check($data['email'], $data['context'], $data['otp']);
         if (!$ok) {
-            return response()->json(['success'=>false, 'message'=>'رمز غير صحيح أو منتهي.'], 422);
+            $message = LocalizationHelper::getMessage('invalid_otp');
+            return response()->json(['success'=>false, 'message'=>$message], 422);
         }
 
         if ($data['context'] === 'register') {
-            // علّم حساب المستخدم أنه Verified (حسب بنية مشروعك)
             User::where('email', $data['email'])->update(['email_verified_at' => now()]);
-            return response()->json(['success'=>true, 'message'=>'تم تفعيل البريد بنجاح.']);
+            $message = LocalizationHelper::getMessage('email_verified');
+            return response()->json(['success'=>true, 'message'=>$message]);
         } else {
-            // أعطِ reset_token قصير العمر
             $token = $this->otpService->shortResetToken(['email'=>$data['email']]);
-            return response()->json(['success'=>true, 'reset_token'=>$token]);
+            $message = LocalizationHelper::getMessage('reset_token_generated');
+            return response()->json(['success'=>true, 'reset_token'=>$token, 'message'=>$message]);
         }
     }
 
@@ -72,17 +73,20 @@ class OtpController extends Controller
 
         $claims = $this->otpService->consumeResetToken($data['reset_token']);
         if (!$claims || empty($claims['email'])) {
-            return response()->json(['success'=>false,'message'=>'الرابط/الرمز منتهي أو غير صالح.'], 422);
+            $message = LocalizationHelper::getMessage('invalid_reset_token');
+            return response()->json(['success'=>false,'message'=>$message], 422);
         }
 
         $user = User::where('email', $claims['email'])->first();
         if (!$user) {
-            return response()->json(['success'=>false,'message'=>'المستخدم غير موجود.'], 404);
+            $message = LocalizationHelper::getMessage('user_not_found');
+            return response()->json(['success'=>false,'message'=>$message], 404);
         }
 
         $user->password = Hash::make($data['new_password']);
         $user->save();
 
-        return response()->json(['success'=>true,'message'=>'تم تحديث كلمة المرور بنجاح.']);
+        $message = LocalizationHelper::getMessage('password_updated');
+        return response()->json(['success'=>true,'message'=>$message]);
     }
 }

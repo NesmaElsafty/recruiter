@@ -368,4 +368,13 @@ return [
     'failed_to_remove_candidate_from_favorites' => 'Failed to remove candidate from favorites',
     'favorites_retrieved_successfully' => 'Favorites retrieved successfully',
     'failed_to_retrieve_favorites' => 'Failed to retrieve favorites',
+    
+    // OTP related
+    'no_account_found' => 'No account found with this email address',
+    'otp_sent' => 'OTP code has been sent to your email',
+    'invalid_otp' => 'Invalid OTP code',
+    'email_verified' => 'Email has been verified successfully',
+    'reset_token_generated' => 'Password reset token has been generated',
+    'invalid_reset_token' => 'Invalid or expired reset token',
+    'password_updated' => 'Password has been updated successfully',
 ];
