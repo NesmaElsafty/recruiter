@@ -178,4 +178,10 @@ class User extends Authenticatable implements HasMedia
     {
         return $this->hasMany(Favorite::class, 'candidate_id');
     }
+
+    // sub major
+    public function sub_major()
+    {
+        return $this->belongsTo(SubMajor::class);
+    }
 }

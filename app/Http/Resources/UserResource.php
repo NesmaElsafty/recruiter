@@ -50,7 +50,10 @@ class UserResource extends JsonResource
                 return new MajorResource($this->major);
             }),
             'major_name' => $this->major_name,
-
+            'sub_major' => $this->whenLoaded('sub_major', function () {
+                return new SubMajorResource($this->sub_major);
+            }),
+                    
             'feedbacks' => $this->whenLoaded('feedbacks', function () {
                 return FeedbackResource::collection($this->feedbacks);
             }),

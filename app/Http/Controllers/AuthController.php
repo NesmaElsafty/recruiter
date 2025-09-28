@@ -42,6 +42,7 @@ class AuthController extends Controller
                 'city_id' => 'nullable|exists:cities,id',
                 'major_id' => 'nullable|exists:majors,id',
                 'major_name' => 'nullable|string|max:255',
+                'sub_major_id' => 'nullable|exists:sub_majors,id',
                 'company_name' => 'nullable|string|max:255',
                 'job_title' => 'nullable|string|max:255',
             ]);    

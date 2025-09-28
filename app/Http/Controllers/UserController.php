@@ -186,13 +186,14 @@ class UserController extends Controller
                 'phone' => 'required|string|max:255|unique:users,phone',
                 'city_id' => 'nullable|exists:cities,id',
                 'major_id' => 'nullable|exists:majors,id',
+                'sub_major_id' => 'nullable|exists:sub_majors,id',
                 'company_name' => 'nullable|string|max:255',
                 'job_title' => 'nullable|string|max:255',
             ]);
             $userData = $request->all();
             $userData['password'] = Hash::make('123456');
             $user = $this->userService->createUser($userData);
-            $user->load(['city', 'major', 'skills', 'experiences', 'education']);
+            $user->load(['city', 'major', 'sub_major', 'skills', 'experiences', 'education']);
             return LocalizationHelper::successResponse(
                 'user_created_successfully',
                 new UserResource($user),

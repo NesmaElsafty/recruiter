@@ -15,4 +15,9 @@ class SubMajor extends Model
     {
         return $this->belongsTo(Major::class);
     }
+
+    public function users()
+    {
+        return $this->hasMany(User::class);
+    }
 }
