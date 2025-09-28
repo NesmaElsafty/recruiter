@@ -220,10 +220,11 @@ Route::middleware('auth:api')->group(function () {
         });
     
         // sub majors routes
-        Route::post('subMajors', [SubMajorController::class, 'store']);
-        Route::put('subMajors/{id}', [SubMajorController::class, 'update']);
-        Route::delete('subMajors/{id}', [SubMajorController::class, 'destroy']);
-
+        Route::prefix('subMajors')->group(function () {
+            Route::post('', [SubMajorController::class, 'store']);
+            Route::put('{id}', [SubMajorController::class, 'update']);
+            Route::delete('{id}', [SubMajorController::class, 'destroy']);
+        });
     });
 });
 
