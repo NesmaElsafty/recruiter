@@ -64,6 +64,10 @@ class CandidateController extends Controller
             $candidates = $candidates->where('major_id', $request->major_id);
         }
 
+        if(isset($request->sub_major_id)) {
+            $candidates = $candidates->where('sub_major_id', $request->sub_major_id);
+        }
+
         // years of experience
         if(isset($request->total_years_from) && isset($request->total_years_to)) {     
             $candidates = $candidates->whereBetween('total_period', [$request->total_years_from, $request->total_years_to]);
@@ -207,6 +211,10 @@ class CandidateController extends Controller
 
             if(isset($request->major_id)) {
                 $candidates = $candidates->where('major_id', $request->major_id);
+            }
+
+            if(isset($request->sub_major_id)) {
+                $candidates = $candidates->where('sub_major_id', $request->sub_major_id);
             }
 
             // years of experience

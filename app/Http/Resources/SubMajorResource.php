@@ -17,7 +17,7 @@ class SubMajorResource extends JsonResource
         $locale = app()->getLocale();
 
         return [
-            'id' => $this->id,
+            'id' => $this->id, 
             'name' => $this->{"name_{$locale}"} ?? $this->name_ar,
             'major_id' => $this->major_id,
         ];
