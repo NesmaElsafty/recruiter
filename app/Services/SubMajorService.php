@@ -77,7 +77,7 @@ class SubMajorService
     /**
      * Get sub majors by major ID
      */
-    public function getSubMajorsByMajorId(int $majorId)
+    public function getSubMajorsByMajorId($majorId)
     {
         return SubMajor::where('major_id', $majorId)->get();
     }

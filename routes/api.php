@@ -36,6 +36,16 @@ Route::post('login', [AuthController::class, 'login'])->name('login');
 Route::post('auth/requestEmailOtp', [AuthController::class, 'requestEmailOtp']);
 Route::post('auth/verify-email-otp', [AuthController::class, 'verifyEmailOtp']);
 
+// Social Auth routes
+
+Route::prefix('auth')->group(function () {
+    Route::get('{provider}/redirect', [SocialAuthController::class, 'redirect'])
+        ->whereIn('provider', ['google','linkedin']);
+
+    Route::get('{provider}/callback', [SocialAuthController::class, 'callback'])
+        ->whereIn('provider', ['google','linkedin']);
+});
+
 // City and major routes
 Route::get('cities', [CityController::class, 'index']);
 Route::get('cities/{city}', [CityController::class, 'show']);
@@ -76,6 +86,7 @@ Route::get('candidates/{id}', [CandidateController::class, 'show']);
 // sub majors routes
 Route::get('subMajors', [SubMajorController::class, 'index']);
 Route::get('subMajors/{id}', [SubMajorController::class, 'show']);
+Route::get('getSubMajorsByMajorId', [SubMajorController::class, 'getSubMajorsByMajorId']);
 
 // Protected routes (require authentication)
 Route::middleware('auth:api')->group(function () {

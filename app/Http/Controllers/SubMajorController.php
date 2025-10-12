@@ -107,4 +107,24 @@ class SubMajorController extends Controller
             );
         }
     }
+
+    // get sub majors by major id   
+    public function getSubMajorsByMajorId(Request $request)
+    {
+        try {
+            $request->validate([
+                'major_id' => 'required|exists:majors,id',
+            ]);
+            $subMajors = $this->subMajorService->getSubMajorsByMajorId($request->major_id);
+            return LocalizationHelper::successResponse(
+                'sub_majors_retrieved_successfully',
+                SubMajorResource::collection($subMajors)
+            );
+        }catch(Exception $e){
+            return LocalizationHelper::errorResponse(
+                'failed_to_retrieve_sub_majors',
+                $e->getMessage()
+            );
+        }
+    }
 }
