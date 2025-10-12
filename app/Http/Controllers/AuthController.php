@@ -18,6 +18,12 @@ use Exception;
 use App\Helpers\LocalizationHelper;
 use App\Services\UserService;
 use App\Models\Major;
+use App\Models\RefreshToken;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Cookie;
+
 
 class AuthController extends Controller
 {
@@ -98,8 +104,11 @@ class AuthController extends Controller
                 );
             }
 
-            // Create token
-            $token = $user->createToken('auth-token');
+            DB::beginTransaction();
+            $access = $this->issueAccessToken($user, $request->header('X-Device-Name') ?: 'auth-token', minutes: 60);
+            $refresh = $this->issueRefreshToken($user, $request, days: 30);
+
+            DB::commit();
 
             // Load relationships for response
             $user->load(['city', 'major']);
@@ -108,8 +117,11 @@ class AuthController extends Controller
                 'login_successful',
                 [
                     'user' => new UserResource($user),
-                    'token' => $token,
-                    'token_type' => 'Bearer'
+                    'token' => $access['token'],
+                    'token_type' => 'Bearer',
+                    'access_expires_at'     => $access['expires_at'],
+                    'refresh_token'         => $refresh['refresh_token'],
+                    'refresh_expires_at'    => $refresh['refresh_expires_at'],
                 ]
             );
         } catch (Exception $e) {
@@ -164,32 +176,61 @@ class AuthController extends Controller
         }
     }
 
-    /**
-     * Refresh token
-     */
     public function refresh(Request $request)
     {
         try {
-            $user = $request->user();
-            
-            // Create new token
-            $token = $user->createToken('auth-token');
+            // تقدر تبعته في البودي أو تاخده من كوكي HttpOnly
+            $refreshPlain = $request->input('refresh_token') ?? $request->cookie('refresh_token');
+            if (! $refreshPlain) {
+                return LocalizationHelper::errorResponse('missing_refresh_token', null, 422);
+            }
 
-            return LocalizationHelper::successResponse(
-                'token_refreshed_successfully',
-                [
-                    'token' => $token,
-                    'token_type' => 'Bearer'
-                ]
-            );
+            $hash = hash('sha256', $refreshPlain);
+
+            /** @var \App\Models\RefreshToken $record */
+            $record = RefreshToken::where('token_hash', $hash)->first();
+
+            if (! $record || $record->revoked || $record->expires_at->isPast()) {
+                return LocalizationHelper::errorResponse('invalid_or_expired_refresh_token', null, 401);
+            }
+
+            $user = User::find($record->user_id);
+            if (! $user) {
+                return LocalizationHelper::errorResponse('user_not_found', null, 401);
+            }
+
+            DB::beginTransaction();
+
+            // 1) اعمل revoke للـ refresh القديم (rotation)
+            $record->revoked = true;
+            $record->save();
+
+            // 2) اصدر access جديد
+            $access = $this->issueAccessToken($user, $record->device_name ?: 'auth-token', minutes: 60);
+
+            // 3) اصدر refresh جديد واربط القديم بالجديد
+            $newRefresh = $this->issueRefreshToken($user, $request, days: 30);
+            $record->replaced_by_id = RefreshToken::where('token_hash', hash('sha256', $newRefresh['refresh_token']))->value('id');
+            $record->save();
+
+            DB::commit();
+
+            $payload = [
+                'access_token'       => $access['access_token'],
+                'access_expires_at'  => $access['expires_at'],
+                'refresh_token'      => $newRefresh['refresh_token'],
+                'refresh_expires_at' => $newRefresh['refresh_expires_at'],
+                'token_type'         => 'Bearer',
+            ];
+
+            $response = LocalizationHelper::successResponse('token_refreshed_successfully', $payload);
+            return $response;
+
         } catch (Exception $e) {
-            return LocalizationHelper::errorResponse(
-                'token_refresh_failed',
-                $e->getMessage(),
-                500
-            );
+            return LocalizationHelper::errorResponse('token_refresh_failed', $e->getMessage(), 500);
         }
     }
+
 
     public function updateProfile(Request $request)
     {
@@ -310,4 +351,59 @@ class AuthController extends Controller
             'message' => 'OTP verified'
         ]);
     }
+
+
+private function issueAccessToken(User $user, ?string $deviceName = null, ?int $minutes = 60): array
+{
+    // Custom token system: createToken returns a string directly
+    $accessToken = $user->createToken($deviceName ?: 'auth-token');
+
+    return [
+        'token'  => $accessToken,
+        'expires_at'    => now()->addMinutes($minutes)->toISOString(),
+        'token_type'    => 'Bearer',
+    ];
+}
+
+private function issueRefreshToken(User $user, Request $request, int $days = 30): array
+{
+    $refreshPlain = Str::random(64);
+    $hash = hash('sha256', $refreshPlain);
+
+    $record = RefreshToken::create([
+        'user_id'     => $user->id,
+        'token_hash'  => $hash,
+        'device_name' => $request->header('X-Device-Name') ?: 'unknown',
+        'ip'          => $request->ip(),
+        'user_agent'  => substr((string)$request->userAgent(), 0, 2000),
+        'expires_at'  => now()->addDays($days),
+    ]);
+
+    return [
+        'refresh_token'        => $refreshPlain,
+        'refresh_token_id'     => $record->id,          // مفيد للتتبع (اختياري ترجيعه)
+        'refresh_expires_at'   => $record->expires_at->toISOString(),
+    ];
+}
+
+/**
+ * اختياري: ترجيع الـ refresh في HttpOnly Cookie للويب
+ */
+private function attachRefreshCookieToResponse($response, string $refreshToken, int $days = 30)
+{
+    $minutes = $days * 24 * 60;
+    // لو عندك سب دومين مختلف استخدم SameSite=None و Secure
+    Cookie::queue(Cookie::make(
+        name: 'refresh_token',
+        value: $refreshToken,
+        minutes: $minutes,
+        path: '/',
+        domain: null,  // اضبطه حسب الدومين
+        secure: true,
+        httpOnly: true,
+        sameSite: 'Lax' // أو 'None' لو cross-site
+    ));
+    return $response;
+}
+
 }

@@ -1,4 +1,3 @@
-// resources/views/emails/otp.blade.php
 <!doctype html>
 <html lang="ar" dir="rtl">
   <body style="font-family:Tahoma,Arial,sans-serif">
