@@ -58,7 +58,7 @@ class UserResource extends JsonResource
                 return FeedbackResource::collection($this->feedbacks);
             }),
 
-            'image' => $this->getFirstMediaUrl('image'),  
+            'image' => $this->getFirstMediaUrl('avatar'),  
             'resume' => $this->getFirstMediaUrl('resume'),
 
             'experiences' => $this->whenLoaded('experiences', function () {

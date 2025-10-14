@@ -195,11 +195,13 @@ class AuthController extends Controller
             if (! $refreshPlain) {
                 return LocalizationHelper::errorResponse('missing_refresh_token', null, 422);
             }
+            // dd($refreshPlain);
 
             $hash = hash('sha256', $refreshPlain);
 
             /** @var \App\Models\RefreshToken $record */
             $record = RefreshToken::where('token_hash', $hash)->first();
+
 
             if (! $record || $record->revoked || $record->expires_at->isPast()) {
                 return LocalizationHelper::errorResponse('invalid_or_expired_refresh_token', null, 401);
@@ -221,13 +223,13 @@ class AuthController extends Controller
 
             // 3) اصدر refresh جديد واربط القديم بالجديد
             $newRefresh = $this->issueRefreshToken($user, $request, days: 30);
-            $record->replaced_by_id = RefreshToken::where('token_hash', hash('sha256', $newRefresh['refresh_token']))->value('id');
+            $record->replaced_by_id = $newRefresh['refresh_token_id'];
             $record->save();
 
             DB::commit();
 
             $payload = [
-                'access_token'       => $access['access_token'],
+                'token'              => $access['token'],
                 'access_expires_at'  => $access['expires_at'],
                 'refresh_token'      => $newRefresh['refresh_token'],
                 'refresh_expires_at' => $newRefresh['refresh_expires_at'],

@@ -44,6 +44,9 @@ Route::prefix('auth')->group(function () {
 
     Route::get('{provider}/callback', [SocialAuthController::class, 'callback'])
         ->whereIn('provider', ['google','linkedin']);
+
+    Route::post('refresh', [AuthController::class, 'refresh']);
+    
 });
 
 // City and major routes
@@ -103,7 +106,6 @@ Route::middleware('auth:api')->group(function () {
         Route::post('updateProfile', [AuthController::class, 'updateProfile']);
         Route::post('updatePassword', [AuthController::class, 'updatePassword']);
         Route::post('logout', [AuthController::class, 'logout']);
-        Route::post('refresh', [AuthController::class, 'refresh']);
     });
 
     // feedback routes
