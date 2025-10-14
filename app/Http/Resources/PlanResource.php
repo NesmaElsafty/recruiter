@@ -19,7 +19,7 @@ class PlanResource extends JsonResource
             'duration' => $this->duration,
             'type' => $this->type,
             'is_active' => (bool)$this->is_active,
-            'features' => $this->whenLoaded('features', function () {
+            'features' => $this->whenLoaded('features', function () use ($locale) {
                 return $this->features->map(function ($f) use ($locale) {
                     return [
                         'id' => $f->id,

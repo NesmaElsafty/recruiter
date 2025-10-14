@@ -66,11 +66,22 @@ class AuthController extends Controller
             // Load relationships for response
             $user->load(['city', 'major', 'skills', 'experiences', 'education']);
 
+            
+            DB::beginTransaction();
+            $access = $this->issueAccessToken($user, $request->header('X-Device-Name') ?: 'auth-token', minutes: 60);
+            $refresh = $this->issueRefreshToken($user, $request, days: 30);
+
+            DB::commit();
+
             return LocalizationHelper::successResponse(
                 'user_created_successfully',
                 [
                     'user' => new UserResource($user),
-                    'token' => $token,
+                    'token' => $access['token'],
+                    'token_type' => 'Bearer',
+                    'access_expires_at'     => $access['expires_at'],
+                    'refresh_token'         => $refresh['refresh_token'],
+                    'refresh_expires_at'    => $refresh['refresh_expires_at'],
                 ],
                 201
             );
@@ -98,7 +109,7 @@ class AuthController extends Controller
 
             if (!$user || !Hash::check($credentials['password'], $user->password)) {
                 return LocalizationHelper::errorResponse(
-                    'unauthorized',
+                    'wrong_credintials',
                     null,
                     401
                 );
