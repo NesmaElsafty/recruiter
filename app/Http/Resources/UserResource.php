@@ -72,6 +72,8 @@ class UserResource extends JsonResource
             'skills' => $this->whenLoaded('skills', function () {
                 return SkillResource::collection($this->skills);
             }),
+
+            'profile_progress' => 60 . '%',
            
             'created_at' => $this->created_at?->format('Y-m-d H:i:s'),
             'updated_at' => $this->updated_at?->format('Y-m-d H:i:s'),
