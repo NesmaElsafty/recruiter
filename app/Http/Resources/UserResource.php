@@ -22,6 +22,60 @@ class UserResource extends JsonResource
     {
         $locale = app()->getLocale();
         $majorName = $this->major_name ?? $this->major?->{"name_{$locale}"} ?? $this->major?->name_en;
+
+        $basic_data =[
+            'id' => $this->id,
+            'fname' => $this->fname,
+            'lname' => $this->lname,
+            'email' => $this->email,
+            'phone' => $this->phone,
+        ];
+
+        $achieved_precentage = 0;
+        $total_precentage = 7;
+
+        // check if $basic data has any value and return false if empty
+        foreach($basic_data as $key => $value){
+            if(empty($value)){
+                $achieved_precentage = 0;
+                break;
+            }
+            $achieved_precentage = 1;
+        }
+
+        $total_experiences = $this->experiences()->count();
+        if($total_experiences > 0){
+            $achieved_precentage += 1;
+        }
+
+        $total_educations = $this->education()->count();
+        if($total_educations > 0){
+            $achieved_precentage += 1;
+        }
+
+        $total_skills = $this->skills()->count();
+        if($total_skills > 0){
+            $achieved_precentage += 1;
+        }
+
+        $total_interviews = $this->interviews()->count();
+        if($total_interviews > 0){
+            $achieved_precentage += 1;
+        }
+
+        $check_resume = $this->getFirstMediaUrl('resume');
+        if($check_resume){
+            $achieved_precentage += 1;
+        }
+
+        $check_image = $this->getFirstMediaUrl('avatar');
+        if($check_image){
+            $achieved_precentage += 1;
+        }
+
+        $profile_progress = round(($achieved_precentage / $total_precentage) * 100, 0);
+
+        
         return [
             'id' => $this->id,
             'fname' => $this->fname,
@@ -73,7 +127,7 @@ class UserResource extends JsonResource
                 return SkillResource::collection($this->skills);
             }),
 
-            'profile_progress' => 60 . '%',
+            'profile_progress' => $profile_progress . '%',
            
             'created_at' => $this->created_at?->format('Y-m-d H:i:s'),
             'updated_at' => $this->updated_at?->format('Y-m-d H:i:s'),
