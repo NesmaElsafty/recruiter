@@ -20,6 +20,8 @@ class AlertResource extends JsonResource
             'description' => $this->description,
             'user_id' => $this->user_id,
             'is_read' => $this->is_read,
+            'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at,
         ];
     }
 }
