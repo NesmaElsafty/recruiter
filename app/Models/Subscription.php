@@ -10,6 +10,7 @@ class Subscription extends Model
     use HasFactory;
     
     protected $guarded = [];
+    protected $table = 'subscriptions';
 
     public function user(){
         return $this->belongsTo(User::class);

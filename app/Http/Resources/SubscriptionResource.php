@@ -16,12 +16,18 @@ class SubscriptionResource extends JsonResource
     public function toArray(Request $request): array
     {
         $locale = app()->getLocale();
-        // dd($this);
+        
         return [
             'id' => $this->id,
             'subscription_id' => $this->subscription_id,
             'user_name' => $this->user?->fname . ' ' . $this->user?->lname,
             'plan_name' => $this->plan?->{"name_{$locale}"} ?? $this->plan?->name_ar,
+            'features' => $this->plan?->features->map(function ($feature) use ($locale) {
+                return [
+                    'id' => $feature->id,
+                    'name' => $feature->{"name_{$locale}"} ?? $feature->name_en,
+                ];
+            }),
             'plan_duration_type' => $this->plan?->duration_type,
             'paid_amount' => $this->paid_amount,
             'payment_method' => $this->payment_method,

@@ -127,7 +127,7 @@ class SubscriptionService
             ->where('user_id', $user->id)
             ->where('status', 'active')
             ->first();
-        return $subscription;
+        return $subscription->load('plan.features');
     }
 
     /**
