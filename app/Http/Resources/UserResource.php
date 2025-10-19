@@ -88,6 +88,7 @@ class UserResource extends JsonResource
             'status' => $this->is_active ? LocalizationHelper::getStatusValue('active') : LocalizationHelper::getStatusValue('inactive'),
             'company_name' => $this->company_name,
             'job_title' => $this->job_title,
+            'degree' => $this->degree,
 
             'interviews' => $this->whenLoaded('interviews', function () {
                 return InterviewResource::collection($this->interviews);

@@ -6,6 +6,7 @@ use App\Models\Experience;
 use App\Models\Skill;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use App\Models\User;
 
 class ExperienceService
 {

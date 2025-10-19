@@ -189,6 +189,7 @@ class UserController extends Controller
                 'sub_major_id' => 'nullable|exists:sub_majors,id',
                 'company_name' => 'nullable|string|max:255',
                 'job_title' => 'nullable|string|max:255',
+                'degree' => 'nullable|string|max:255',
             ]);
             $userData = $request->all();
             $userData['password'] = Hash::make('123456');
