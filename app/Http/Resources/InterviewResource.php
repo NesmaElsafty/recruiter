@@ -18,11 +18,11 @@ class InterviewResource extends JsonResource
         return [
             'id' => $this->id,
             'interview_id' => $this->interview_id,
-            'user' => [
+            'user' => $this->user ? [
                 'id' => $this->user->id,
                 'name' => $this->user->fname . ' ' . $this->user->lname,
-            ],
-            'major' => new MajorResource($this->user->major),
+            ] : null,
+            'major' => $this->user ?  new MajorResource($this->user->major) : null,
             'performance' => $this->performance . '%',
             'status' => $this->status,
             'created_at' => $this->created_at?->format('Y-m-d H:i:s'),

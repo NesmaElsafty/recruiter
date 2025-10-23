@@ -167,6 +167,12 @@ Route::middleware('auth:api')->group(function () {
     Route::prefix('admin')->group(function () {
         Route::apiResource('cities', CityController::class)->except(['show', 'index']);
         Route::apiResource('majors', MajorController::class)->except(['show', 'index']);
+
+        Route::get('getAllMajors', [MajorController::class, 'getAllMajors']);
+        Route::get('getMajorById/{id}', [MajorController::class, 'getMajorById']);
+        
+        Route::get('getAllCities', [CityController::class, 'getAllCities']);
+        Route::get('getCityById/{id}', [CityController::class, 'getCityById']);
         
         // User routes
         Route::post('users', [UserController::class, 'store']);

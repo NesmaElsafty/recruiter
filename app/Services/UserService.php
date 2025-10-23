@@ -14,7 +14,7 @@ class UserService
     public function getAllUsers($data)
     {
         $query = User::query();
-        $query->where('type', $data['type'])->whereNotNull('is_active');
+        $query->where('type', $data['type']);
 
         if(isset($data['search'])) {
             $query->where('fname', 'like', "%{$data['search']}%")

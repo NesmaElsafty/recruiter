@@ -39,6 +39,42 @@ class CityController extends Controller
         }
     }
 
+    // getAllCities
+    public function getAllCities()
+    {
+        try {
+            $cities = $this->cityService->getAllCities();
+            return response()->json([
+                'success' => true,
+                'data' => $cities
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to retrieve cities',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    // getCityById
+    public function getCityById($id)
+    {
+        try {
+            $city = $this->cityService->getCityById($id);
+            return response()->json([
+                'success' => true,
+                'data' => $city
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to retrieve city',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
     public function store(Request $request)
     {
         try {

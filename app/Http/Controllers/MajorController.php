@@ -4,12 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\MajorResource;
+use App\Http\Resources\AdminMajorResource;
 use App\Services\MajorService;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Validation\ValidationException;
 use Exception;
+use App\Helpers\LocalizationHelper;
 
 class MajorController extends Controller
 {
@@ -23,7 +25,7 @@ class MajorController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(): JsonResponse
+    public function index()
     {
         try {
             $majors = $this->majorService->getAllMajors();
@@ -40,23 +42,72 @@ class MajorController extends Controller
         }
     }
 
+    // getAllMajors
+    public function getAllMajors()
+    {
+        try {
+            $majors = $this->majorService->getAllMajors();
+            return response()->json([
+                'success' => true,
+                'data' => AdminMajorResource::collection($majors)
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to retrieve majors',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    // getMajorById
+    public function getMajorById(int $id)
+    {
+        try {
+            $major = $this->majorService->getMajorById($id);
+            return response()->json([
+                'success' => true,
+                'data' => new AdminMajorResource($major)
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to retrieve major',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request): JsonResponse
+    public function store(Request $request)
     {
         try {
             $request->validate([
                 'name_en' => 'required|string|max:255',
                 'name_ar' => 'required|string|max:255',
+                'sub_majors' => 'nullable|array',
+                'sub_majors.*.name_en' => 'required|string|max:255',
+                'sub_majors.*.name_ar' => 'required|string|max:255',
             ]);
 
             $major = $this->majorService->createMajor($request->all());
 
+            // attach sub majors to major
+            if($request->has('sub_majors')){
+                foreach($request->sub_majors as $sub_major){
+                    $major->subMajors()->create([
+                        'name_en' => $sub_major['name_en'],
+                        'name_ar' => $sub_major['name_ar'],
+                        'major_id' => $major->id,
+                    ]);
+                }
+            }
             return response()->json([
                 'success' => true,
                 'message' => 'Major created successfully',
-                'data' => new MajorResource($major)
+                'data' => new AdminMajorResource($major)
             ], 201);
         } catch (ValidationException $e) {
             return response()->json([
@@ -76,13 +127,13 @@ class MajorController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id): JsonResponse
+    public function show($id)
     {
         try {
             $major = $this->majorService->getMajorById((int)$id);
             return response()->json([
                 'success' => true,
-                'data' => new MajorResource($major)
+                'data' => new AdminMajorResource($major)
             ]);
         } catch (ModelNotFoundException $e) {
             return response()->json([
@@ -101,7 +152,7 @@ class MajorController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id): JsonResponse
+    public function update(Request $request, $id)
     {
         try {
             $request->validate([
@@ -111,11 +162,21 @@ class MajorController extends Controller
 
             $major = $this->majorService->updateMajor((int)$id, $request->all());
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Major updated successfully',
-                'data' => new MajorResource($major)
-            ]);
+            // update sub majors
+            if($request->has('sub_majors')){
+                $major->subMajors()->delete();
+                foreach($request->sub_majors as $sub_major){
+                    $major->subMajors()->create([
+                        'name_en' => $sub_major['name_en'],
+                        'name_ar' => $sub_major['name_ar'],
+                        'major_id' => $major->id,
+                    ]);
+                }
+            }
+            return LocalizationHelper::successResponse(
+                'major_updated_successfully',
+                new AdminMajorResource($major)
+            );
         } catch (ModelNotFoundException $e) {
             return response()->json([
                 'success' => false,
@@ -139,7 +200,7 @@ class MajorController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id): JsonResponse
+    public function destroy($id)
     {
         try {
             $this->majorService->deleteMajor((int)$id);
@@ -147,24 +208,18 @@ class MajorController extends Controller
                 'success' => true,
                 'message' => 'Major deleted successfully'
             ]);
-        } catch (ModelNotFoundException $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Major not found'
-            ], 404);
         } catch (Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to delete major',
-                'error' => $e->getMessage()
-            ], 500);
+            return LocalizationHelper::errorResponse(
+                'failed_to_delete_major',
+                $e->getMessage()
+            );
         }
     }
 
     /**
      * Search majors by name
      */
-    public function search(string $query): JsonResponse
+    public function search($query)
     {
         try {
             $majors = $this->majorService->searchMajors($query);
