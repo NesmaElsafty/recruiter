@@ -31,7 +31,7 @@ class InterviewService
         }
 
         // Status filter
-        if (isset($data['status']) && !empty($data['status'])) {
+        if (isset($data['status']) && $data['status'] !== 'all') {
             $query->where('status', $data['status']);
         }
 

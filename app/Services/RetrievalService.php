@@ -22,7 +22,7 @@ class RetrievalService
     /**
      * Get all retrievals with filters
      */
-    public function getAllRetrievals(array $data = []): Builder
+    public function getAllRetrievals($data = []): Builder
     {
         $query = Retrieval::with(['user', 'subscription.plan']);
 
@@ -47,11 +47,11 @@ class RetrievalService
         }
 
         // Status filter
-        if (isset($data['status']) && !empty($data['status'])) {
+        if (isset($data['status']) && $data['status'] !== 'all') {
             $query->where('status', $data['status']);
         }
 
-        if(isset($data['payment_method']) && !empty($data['payment_method'])) {
+        if(isset($data['payment_method']) && $data['payment_method'] !== 'all') {
             $query->whereHas('subscription', function ($subscriptionQuery) use ($data) {
                 $subscriptionQuery->where('payment_method', $data['payment_method']);
             });

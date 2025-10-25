@@ -23,11 +23,11 @@ class PlanService
             });
         }
 
-        if (isset($data['type'])) {
+        if (isset($data['type']) && $data['type'] !== 'all') {
             $query->where('type', $data['type']);
         }
 
-        if (isset($data['is_active'])) {
+        if (isset($data['is_active']) && $data['is_active'] !== 'all') {
             $query->where('is_active', $data['is_active']);
         }
 

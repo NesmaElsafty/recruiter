@@ -136,16 +136,26 @@ class SubscriptionController extends Controller
     {
         try {
             $request->validate([
-                'ids' => 'nullable|array|min:1',
-                'ids.*' => 'required|exists:subscriptions,id',
+                'ids' => 'nullable|array',
+                'ids.*' => 'nullable|exists:subscriptions,id',
                 'action' => 'required|string|in:export,activationToggle'
             ]);
             $ids = [];
-            if(isset($request->ids)) {
+            if(isset($request->ids) && !empty($request->ids)) {
                 $ids = $request->ids;
             }else{
                 $ids = Subscription::pluck('id')->toArray();
             }
+            
+            // Check if we have any IDs to process
+            if(empty($ids)) {
+                return LocalizationHelper::errorResponse(
+                    'no_data_to_export',
+                    'No data to export.',
+                    400
+                );
+            }
+            
             $result = null;
             switch($request->action) {
                 case 'activationToggle':

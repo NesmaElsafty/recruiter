@@ -17,7 +17,7 @@ class MessageService
         $query = Message::with('sender');
 
         // Filter by read status
-        if (isset($data['is_replied'])) {
+        if (isset($data['is_replied']) && $data['is_replied'] !== 'all') {
             $query->where('is_replied', $data['is_replied']);
         }
 

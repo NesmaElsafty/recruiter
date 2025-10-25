@@ -45,19 +45,19 @@ class SubscriptionService
         }
 
         // Active status filter
-        if (isset($data['is_active']) && $data['is_active'] !== '') {
+        if (isset($data['is_active']) && $data['is_active'] !== 'all') {
             $query->where('is_active', (bool) $data['is_active']);
         }
 
         // Plan duration filter
-        if (isset($data['plan_duration']) && !empty($data['plan_duration'])) {
+        if (isset($data['plan_duration']) && $data['plan_duration'] !== 'all') {
             $query->whereHas('plan', function ($planQuery) use ($data) {
                 $planQuery->where('duration_type', $data['plan_duration']);
             });
         }
 
         // Payment method filter
-        if (isset($data['payment_method']) && !empty($data['payment_method'])) {
+        if (isset($data['payment_method']) && $data['payment_method'] !== 'all') {
             $query->where('payment_method', $data['payment_method']);
         }
 

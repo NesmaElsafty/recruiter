@@ -26,7 +26,7 @@ class TermService
         }
 
         // Filter by is_active status
-        if (isset($data['is_active'])) {
+        if (isset($data['is_active']) && $data['is_active'] !== 'all') {
             $query->where('is_active', $data['is_active']);
         }
 
