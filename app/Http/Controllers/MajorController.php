@@ -29,16 +29,16 @@ class MajorController extends Controller
     {
         try {
             $majors = $this->majorService->getAllMajors();
-            return response()->json([
-                'success' => true,
-                'data' => MajorResource::collection($majors)
-            ]);
+            return LocalizationHelper::successResponse(
+                'cities_retrieved_successfully',
+                MajorResource::collection($majors)
+            );
         } catch (Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to retrieve majors',
-                'error' => $e->getMessage()
-            ], 500);
+            return LocalizationHelper::errorResponse(
+                'failed_to_retrieve_majors',
+                $e->getMessage(),
+                500
+            );
         }
     }
 
