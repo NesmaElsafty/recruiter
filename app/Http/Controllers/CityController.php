@@ -11,6 +11,8 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Validation\ValidationException;
 use Exception;
 use App\Helpers\LocalizationHelper;
+use App\Http\Resources\AdminCityResource;
+use App\Helpers\PaginationHelper;
 
 class CityController extends Controller
 {
@@ -40,13 +42,14 @@ class CityController extends Controller
     }
 
     // getAllCities
-    public function getAllCities()
+    public function getAllCities(Request $request)
     {
         try {
-            $cities = $this->cityService->getAllCities();
+            $cities = $this->cityService->getAllCities($request->all())->paginate(10);
             return response()->json([
                 'success' => true,
-                'data' => $cities
+                'data' => AdminCityResource::collection($cities),
+                'pagination' => PaginationHelper::paginate($cities)
             ]);
         } catch (Exception $e) {
             return response()->json([

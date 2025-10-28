@@ -25,7 +25,6 @@ class PlanController extends Controller
 
         $user = auth('api')->user();
 
-        // dd($user);
         if($user && $user->type == 'admin') {
             $plans = $this->planService->getAllPlans($data)->paginate(15);
         }else{
@@ -99,8 +98,8 @@ class PlanController extends Controller
             'features' => 'nullable|array',
             'features.*' => 'integer|exists:features,id',
         ]);
+        $plan = $this->planService->updatePlan($id, $request->all());
 
-        $plan = $this->planService->updatePlan($id, $validated);
         return response()->json([
             'success' => true,
             'message' => 'Plan updated successfully',

@@ -11,9 +11,15 @@ class MajorService
     /**
      * Get all majors
      */
-    public function getAllMajors()
+    public function getAllMajors($data = null)
     {
-        return Major::all();
+        $majors = Major::query();
+        
+        if(isset($data['search']) && !empty($data['search'])) {
+            $majors->where('name_en', 'like', "%{$data['search']}%")
+                  ->orWhere('name_ar', 'like', "%{$data['search']}%");
+        }
+        return $majors->paginate(10);
     }
 
     /**
@@ -68,8 +74,6 @@ class MajorService
      */
     public function searchMajors(string $query)
     {
-        return Major::where('name_en', 'like', "%{$query}%")
-                    ->orWhere('name_ar', 'like', "%{$query}%")
-                    ->get();
+        
     }
 }

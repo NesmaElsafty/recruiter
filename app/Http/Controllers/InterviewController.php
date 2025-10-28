@@ -59,10 +59,11 @@ class InterviewController extends Controller
            ]);
 
            $ids = [];
-           if(isset($request->ids)) {
+           if(isset($request->ids) && !empty($request->ids)) {
             $ids = $request->ids;
            }else{
             $ids = Interview::pluck('id')->toArray();
+            
            }
 
            $interviews = $this->interviewService->export($ids);

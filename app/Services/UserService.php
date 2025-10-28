@@ -338,7 +338,6 @@ class UserService
     }
 
     // bulk actions
-
     public function activationToggle($ids){
         $users = User::whereIn('id', $ids)->get();
         foreach($users as $user){
@@ -357,7 +356,8 @@ class UserService
     }
 
     public function unblock($ids){
-        $users = User::whereIn('id', $ids)->get();
+        // get users with deleted_at not null
+        $users = User::withTrashed()->whereNotNull('deleted_at')->whereIn('id', $ids)->get();
         foreach($users as $user){
             $user->restore();
         }

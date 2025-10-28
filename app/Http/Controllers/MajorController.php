@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Validation\ValidationException;
 use Exception;
 use App\Helpers\LocalizationHelper;
+use App\Helpers\PaginationHelper;
 
 class MajorController extends Controller
 {
@@ -43,13 +44,14 @@ class MajorController extends Controller
     }
 
     // getAllMajors
-    public function getAllMajors()
+    public function getAllMajors(Request $request)
     {
         try {
-            $majors = $this->majorService->getAllMajors();
+            $majors = $this->majorService->getAllMajors($request->all())->paginate(10);
             return response()->json([
                 'success' => true,
-                'data' => AdminMajorResource::collection($majors)
+                'data' => AdminMajorResource::collection($majors),
+                'pagination' => PaginationHelper::paginate($majors)
             ]);
         } catch (Exception $e) {
             return response()->json([

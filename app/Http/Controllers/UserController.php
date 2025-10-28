@@ -267,6 +267,7 @@ class UserController extends Controller
                 $ids = User::where('type', $request->type)->pluck('id')->toArray();
             }
 
+            $result = null;
             switch($request->action) {
                 case 'activationToggle':
                     $result = $this->userService->activationToggle($ids);
@@ -276,7 +277,7 @@ class UserController extends Controller
                     break;
                 case 'unblock':
                     $result = $this->userService->unblock($ids);
-                    break;   
+                    break;
                 case 'block':
                     $result = $this->userService->block($ids);
                     break;
@@ -287,6 +288,7 @@ class UserController extends Controller
                     $result = $this->userService->bulkRecruiterConfirmation($request->all());
                     break;
             }
+
             return LocalizationHelper::successResponse(
             'bulk_actions_performed_successfully',
                 null,

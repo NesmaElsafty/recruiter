@@ -11,9 +11,15 @@ class CityService
     /**
      * Get all cities
      */
-    public function getAllCities()
+    public function getAllCities($data = null)
     {
-        return City::all();
+        $cities = City::query();
+
+        if(isset($data['search']) && !empty($data['search'])) {
+            $cities->where('name_en', 'like', "%{$data['search']}%")
+                  ->orWhere('name_ar', 'like', "%{$data['search']}%");
+        }
+        return $cities;
     }
 
     /**
