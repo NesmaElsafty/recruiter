@@ -194,6 +194,10 @@ Route::middleware('auth:api')->group(function () {
         Route::post('terms', [TermController::class, 'store']);
         Route::put('terms/{id}', [TermController::class, 'update']);
         Route::delete('terms/{id}', [TermController::class, 'destroy']);
+        // export terms
+        Route::post('termExport', [TermController::class, 'export']);
+        Route::post('termBulkDelete', [TermController::class, 'bulkDelete']);
+        Route::post('termBulkActivationToggle', [TermController::class, 'bulkActivationToggle']);
 
         // plan routes
         Route::post('plans', [PlanController::class, 'store']);

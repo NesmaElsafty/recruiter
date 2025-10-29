@@ -15,8 +15,13 @@ class TermService
     {
         $query = Term::query();
 
-        $query->whereIn('type', $data['type'])->whereIn('user_type', [$data['user_type']]);
+        $query->whereIn('type', $data['type']);
 
+        if($data['user_type'] == 'all') {
+            $query->whereIn('user_type', ['candidate', 'recruiter']);
+        } else {
+            $query->where('user_type', $data['user_type']);
+        }
         // Search functionality
         if (isset($data['search'])) {
             $query->where('title_en', 'like', "%{$data['search']}%")

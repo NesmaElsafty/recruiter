@@ -22,7 +22,7 @@ class NotificationService
     {
         $query = Notification::query();
 
-        if(isset($data['type'])) {
+        if(isset($data['type']) && $data['type'] != 'all') {
             $query->where('type', $data['type']);
         }
 
@@ -31,11 +31,11 @@ class NotificationService
                   ->orWhere('description', 'like', "%{$data['search']}%");
         }
 
-        if(isset($data['status'])) {
+        if(isset($data['status']) && $data['status'] != 'all') {
             $query->where('status', $data['status']);
         }
 
-        if(isset($data['segment'])) {
+        if(isset($data['segment']) && $data['segment'] != 'all') {
             $query->whereJsonContains('segments', $data['segment']);
         }
 

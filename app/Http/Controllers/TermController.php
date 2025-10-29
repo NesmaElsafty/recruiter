@@ -12,6 +12,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Validation\ValidationException;
 use Exception;
 use App\Models\Term;
+use App\Http\Resources\AdminTermResource;
 
 class TermController extends Controller
 {
@@ -28,7 +29,7 @@ class TermController extends Controller
         try {
             $request->validate([
                 'type' => 'required|array|in:terms,privacy_policy,faq',
-                'user_type' => 'required|string|in:candidate,recruiter',
+                'user_type' => 'required|string|in:candidate,recruiter,all',
             ]);
             
             $data = $request->all();
@@ -89,7 +90,7 @@ class TermController extends Controller
             
             return response()->json([
                 'success' => true,
-                'data' => new TermResource($term)
+                'data' => new AdminTermResource($term)
             ]);
         } catch (\Exception $e) {
             return response()->json([
