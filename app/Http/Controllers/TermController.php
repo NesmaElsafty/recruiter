@@ -261,19 +261,17 @@ class TermController extends Controller
                 'type' => 'nullable|in:terms,privacy_policy,faq',
                 'user_type' => 'nullable|in:candidate,recruiter',
                 'is_active' => 'nullable|boolean',
-                'date_from' => 'nullable|date',
-                'date_to' => 'nullable|date'
             ]);
 
             $filters = array_filter($validated, function($key) {
                 return in_array($key, ['type', 'user_type', 'is_active', 'date_from', 'date_to']);
             }, ARRAY_FILTER_USE_KEY);
 
-            $terms = $this->termService->exportTerms($validated['ids'] ?? null, $filters);
+            $url = $this->termService->exportTerms($validated['ids'] ?? null, $filters);
             
             return response()->json([
                 'success' => true,
-                'data' => TermResource::collection($terms)
+                'url' => $url
             ]);
         } catch (ValidationException $e) {
             return response()->json([

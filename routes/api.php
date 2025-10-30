@@ -197,7 +197,7 @@ Route::middleware('auth:api')->group(function () {
         // export terms
         Route::post('termExport', [TermController::class, 'export']);
         Route::post('termBulkDelete', [TermController::class, 'bulkDelete']);
-        Route::post('termBulkActivationToggle', [TermController::class, 'bulkActivationToggle']);
+        Route::post('termBulkActivationToggle', [TermController::class, 'ActivationToggle']);
 
         // plan routes
         Route::post('plans', [PlanController::class, 'store']);

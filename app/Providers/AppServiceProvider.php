@@ -28,8 +28,12 @@ class AppServiceProvider extends ServiceProvider
             $experience->save();
 
             $user = User::find($experience->user_id);
-            $user->total_period = $user->totalPeriod();
-            $user->save();
+            if($user) {
+                $user->total_period = $user->totalPeriod();
+                $user->save();
+            }else{
+                continue;
+            }
         }
     }
 }

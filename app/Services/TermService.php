@@ -5,6 +5,8 @@ namespace App\Services;
 use App\Models\Term;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\DB;
+use App\Helpers\ExportHelper;
+use Carbon\Carbon;
 
 class TermService
 {
@@ -215,29 +217,37 @@ class TermService
         }
         
         // Apply filters
-        if (isset($filters['type'])) {
+        if (isset($filters['type']) && $filters['type'] != 'all') {
             $query->where('type', $filters['type']);
         }
         
-        if (isset($filters['user_type'])) {
+        if (isset($filters['user_type']) && $filters['user_type'] != 'all') {
             $query->where('user_type', $filters['user_type']);
         }
         
-        if (isset($filters['is_active'])) {
+        if (isset($filters['is_active']) && $filters['is_active'] != 'all') {
             $query->where('is_active', $filters['is_active']);
         }
         
-        if (isset($filters['date_from'])) {
-            $query->whereDate('created_at', '>=', $filters['date_from']);
-        }
-        
-        if (isset($filters['date_to'])) {
-            $query->whereDate('created_at', '<=', $filters['date_to']);
-        }
-        
         $terms = $query->orderBy('created_at', 'desc')->get();
-        
-        return $terms;
+        // localization the response depended on lang
+        $data = $terms->map(function ($term) {
+            $locale = app()->getLocale();
+            return [    
+                'ID' => $term->id,
+                'Title' => $term->{"title_{$locale}"} ?? $term->title_en,
+                'Description' => $term->{"description_{$locale}"} ?? $term->description_en,
+                'User Type' => $term->user_type,
+                'Is Active' => $term->is_active ? 'Yes' : 'No',
+                'Created At' => $term->created_at->format('Y-m-d H:i:s'),
+            ];
+        })->toArray();
+
+        // Generate filename
+        $filename =  $filters['type'] . '_export_' . now()->format('Ymd_His') . '.csv';
+        $currentUser = auth('api')->user();
+        $media = ExportHelper::exportToMedia($data, $currentUser, 'exports', $filename);
+        return $media->getUrl();
     }
 
     /**
