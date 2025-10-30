@@ -50,7 +50,7 @@ class MajorController extends Controller
             $majors = $this->majorService->getAllMajors($request->all())->paginate(10);
             return response()->json([
                 'success' => true,
-                'data' => AdminMajorResource::collection($majors),
+                'data' => MajorResource::collection($majors),
                 'pagination' => PaginationHelper::paginate($majors)
             ]);
         } catch (Exception $e) {

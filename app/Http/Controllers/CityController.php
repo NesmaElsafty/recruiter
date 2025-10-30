@@ -48,7 +48,7 @@ class CityController extends Controller
             $cities = $this->cityService->getAllCities($request->all())->paginate(10);
             return response()->json([
                 'success' => true,
-                'data' => AdminCityResource::collection($cities),
+                'data' => CityResource::collection($cities),
                 'pagination' => PaginationHelper::paginate($cities)
             ]);
         } catch (Exception $e) {
