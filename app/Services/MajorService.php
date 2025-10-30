@@ -19,7 +19,7 @@ class MajorService
             $majors->where('name_en', 'like', "%{$data['search']}%")
                   ->orWhere('name_ar', 'like', "%{$data['search']}%");
         }
-        return $majors->paginate(10);
+        return $majors;
     }
 
     /**
