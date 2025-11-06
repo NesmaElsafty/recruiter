@@ -7,6 +7,8 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\DB;
 use App\Helpers\ExportHelper;
+use App\Helpers\PaginationHelper;
+
 
 class FeedbackService
 {
@@ -174,8 +176,7 @@ class FeedbackService
     public function getFeedbackByUser($userId)
     {
         return Feedback::where('user_id', $userId)
-                      ->orderBy('created_at', 'desc')
-                      ->get();
+                      ->orderBy('created_at', 'desc');
     }
     
     public function activationToggle($ids)

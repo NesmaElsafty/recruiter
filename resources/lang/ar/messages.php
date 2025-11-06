@@ -178,6 +178,9 @@ return [
     // Feedback related
     'feedbacks_retrieved_successfully' => 'تم جلب التقييمات بنجاح',
     'failed_to_retrieve_feedbacks' => 'فشل في جلب التقييمات',
+    'failed_to_fetch_feedback' => 'فشل في جلب التقييم',
+    'feedback_not_found' => 'التقييم غير موجود',
+    'not_authorized_to_view_feedback' => 'غير مصرح لك بعرض هذا التقييم',
     'feedback_created_successfully' => 'تم إنشاء التقييم بنجاح',
     'failed_to_create_feedback' => 'فشل في إنشاء التقييم',
     'feedback_updated_successfully' => 'تم تحديث التقييم بنجاح',

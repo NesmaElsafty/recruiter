@@ -137,6 +137,9 @@ return [
     // Feedback related
     'feedbacks_retrieved_successfully' => 'Feedbacks retrieved successfully',
     'failed_to_retrieve_feedbacks' => 'Failed to retrieve feedbacks',
+    'failed_to_fetch_feedback' => 'Failed to fetch feedback',
+    'feedback_not_found' => 'Feedback not found',
+    'not_authorized_to_view_feedback' => 'You are not authorized to view this feedback',
     'feedback_created_successfully' => 'Feedback created successfully',
     'failed_to_create_feedback' => 'Failed to create feedback',
     'feedback_updated_successfully' => 'Feedback updated successfully',

@@ -11,6 +11,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Validation\ValidationException;
 use Exception;
 use App\Models\Feedback;
+use App\Helpers\LocalizationHelper;
 
 class FeedbackController extends Controller
 {
@@ -25,11 +26,12 @@ class FeedbackController extends Controller
     {
         try {
             $data = $request->all();
-            $feedbacks = $this->feedbackService->getAllFeedback($data)->paginate(15);
             $user = auth('api')->user();
             $stats = null;
+            $feedbacks = $this->feedbackService->getFeedbackByUser($user->id)->paginate(15);
             if($user->type == 'admin') {
                 $stats = $this->feedbackService->getFeedbackStats();
+                $feedbacks = $this->feedbackService->getAllFeedback($data)->paginate(15);
             }
             return response()->json([
                 'success' => true,
@@ -38,11 +40,11 @@ class FeedbackController extends Controller
                 'pagination' => PaginationHelper::paginate($feedbacks)
             ]);
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to fetch feedback',
-                'error' => $e->getMessage()
-            ], 500);
+            return LocalizationHelper::errorResponse(
+                'failed_to_fetch_feedback',
+                $e->getMessage(),
+                500
+            );
         }
     }
 
@@ -50,30 +52,25 @@ class FeedbackController extends Controller
     {
         try {
             $validated = $request->validate([
-                'user_id' => 'nullable|exists:users,id',
                 'comment' => 'nullable|string|max:1000',
                 'rating' => 'required|integer|min:1|max:5'
             ]);
 
+            $user = auth('api')->user();
+            $validated['user_id'] = $user->id;
             $feedback = $this->feedbackService->createFeedback($validated);
-            
-            return response()->json([
-                'success' => true,
-                'message' => 'Feedback created successfully',
-                'data' => new FeedbackResource($feedback)
-            ], 201);
-        } catch (ValidationException $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Validation failed',
-                'errors' => $e->errors()
-            ], 422);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to create feedback',
-                'error' => $e->getMessage()
-            ], 500);
+
+            return LocalizationHelper::successResponse(
+                'feedback_created_successfully',
+                new FeedbackResource($feedback),
+                201
+            );
+        }  catch (\Exception $e) {
+            return LocalizationHelper::errorResponse(
+                'failed_to_create_feedback',
+                $e->getMessage(),
+                500
+            );
         }
     }
 
@@ -81,22 +78,30 @@ class FeedbackController extends Controller
     {
         try {
             $feedback = $this->feedbackService->getFeedbackById($id);
-            
+            $user = auth('api')->user();
+            if($user->type != 'admin' && $feedback->user_id != $user->id) {
+                return LocalizationHelper::errorResponse(
+                    'not_authorized_to_view_feedback',
+                    null,
+                    401
+                );
+            }
             return response()->json([
                 'success' => true,
                 'data' => new FeedbackResource($feedback)
             ]);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Feedback not found'
-            ], 404);
+            return LocalizationHelper::errorResponse(
+                'feedback_not_found',
+                null,
+                404
+            );
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to fetch feedback',
-                'error' => $e->getMessage()
-            ], 500);
+            return LocalizationHelper::errorResponse(
+                'failed_to_fetch_feedback',
+                $e->getMessage(),
+                500
+            );
         }
     }
 
@@ -110,28 +115,22 @@ class FeedbackController extends Controller
 
             $feedback = $this->feedbackService->updateFeedback($id, $validated);
             
-            return response()->json([
-                'success' => true,
-                'message' => 'Feedback updated successfully',
-                'data' => new FeedbackResource($feedback)
-            ]);
-        } catch (ValidationException $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Validation failed',
-                'errors' => $e->errors()
-            ], 422);
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Feedback not found'
-            ], 404);
+            return LocalizationHelper::successResponse(
+                'feedback_updated_successfully',
+                new FeedbackResource($feedback)
+            );
+        }  catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return LocalizationHelper::errorResponse(
+                'feedback_not_found',
+                null,
+                404
+            );
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to update feedback',
-                'error' => $e->getMessage()
-            ], 500);
+            return LocalizationHelper::errorResponse(
+                'failed_to_update_feedback',
+                $e->getMessage(),
+                500
+            );
         }
     }
 
@@ -140,21 +139,15 @@ class FeedbackController extends Controller
         try {
             $this->feedbackService->deleteFeedback($id);
             
-            return response()->json([
-                'success' => true,
-                'message' => 'Feedback deleted successfully'
-            ]);
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Feedback not found'
-            ], 404);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to delete feedback',
-                'error' => $e->getMessage()
-            ], 500);
+            return LocalizationHelper::successResponse(
+                'feedback_deleted_successfully'
+            );
+        }  catch (\Exception $e) {
+            return LocalizationHelper::errorResponse(
+                'failed_to_delete_feedback',
+                $e->getMessage(),
+                500
+            );
         }
     }
 
@@ -185,17 +178,18 @@ class FeedbackController extends Controller
                     $result = $this->feedbackService->export($ids);
                     break;
             }
-            return response()->json([
-                'success' => true,
-                'message' => 'Bulk actions performed successfully',
-                'url' => $request->action == 'export' ? $result: null
-            ]);
+            return LocalizationHelper::successResponse(
+                'bulk_actions_performed_successfully',
+                null,
+                200,
+                ['url' => $request->action == 'export' ? $result : null]
+            );
         } catch (Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to bulk actions',
-                'error' => $e->getMessage()
-            ], 500);
+            return LocalizationHelper::errorResponse(
+                'failed_to_bulk_actions',
+                $e->getMessage(),
+                500
+            );
         }
     }
 }
