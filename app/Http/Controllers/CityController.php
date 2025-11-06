@@ -27,7 +27,7 @@ class CityController extends Controller
     public function index()
     {
         try {
-            $cities = $this->cityService->getAllCities();
+            $cities = $this->cityService->getAllCities()->paginate(10);
             return LocalizationHelper::successResponse(
                 'cities_retrieved_successfully',
                 CityResource::collection($cities)

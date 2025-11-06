@@ -29,7 +29,7 @@ class MajorController extends Controller
     public function index()
     {
         try {
-            $majors = $this->majorService->getAllMajors();
+            $majors = $this->majorService->getAllMajors()->paginate(10);
             return LocalizationHelper::successResponse(
                 'cities_retrieved_successfully',
                 MajorResource::collection($majors)

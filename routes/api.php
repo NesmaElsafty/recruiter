@@ -75,7 +75,7 @@ Route::get('users/{id}', [UserController::class, 'show']);
 Route::get('contactUs', [ContactUsController::class, 'index']);
 
 // terms routes
-    Route::get('terms', [TermController::class, 'index']);
+    Route::post('terms', [TermController::class, 'index']);
     Route::get('terms/{id}', [TermController::class, 'show']);
 
 // plans routes
