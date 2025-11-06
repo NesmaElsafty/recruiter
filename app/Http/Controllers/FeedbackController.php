@@ -27,12 +27,13 @@ class FeedbackController extends Controller
         try {
             $data = $request->all();
             $user = auth('api')->user();
-            $stats = null;
-            $feedbacks = $this->feedbackService->getFeedbackByUser($user->id)->paginate(15);
-            if($user->type == 'admin') {
+            $stats = [];
+            $stats = null;            
+            if($user && $user->type == 'admin') {
                 $stats = $this->feedbackService->getFeedbackStats();
-                $feedbacks = $this->feedbackService->getAllFeedback($data)->paginate(15);
             }
+
+            $feedbacks = $this->feedbackService->getAllFeedback($data)->paginate(15);
             return response()->json([
                 'success' => true,
                 'data' => FeedbackResource::collection($feedbacks),
@@ -79,7 +80,7 @@ class FeedbackController extends Controller
         try {
             $feedback = $this->feedbackService->getFeedbackById($id);
             $user = auth('api')->user();
-            if($user->type != 'admin' && $feedback->user_id != $user->id) {
+            if($user && $user->type != 'admin' && $feedback->user_id != $user->id) {
                 return LocalizationHelper::errorResponse(
                     'not_authorized_to_view_feedback',
                     null,

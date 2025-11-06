@@ -71,10 +71,6 @@ class FeedbackService
     {
         $feedback = Feedback::with('user')->find($id);
         
-        if (!$feedback) {
-            throw new ModelNotFoundException('Feedback not found');
-        }
-        
         return $feedback;
     }
 
@@ -139,9 +135,6 @@ class FeedbackService
 
         // Get monthly data for charts (last 12 months)
         $monthlyData = $this->getMonthlyData();
-
-        // Get rating distribution
-        $ratingDistribution = $this->getRatingDistribution();
 
         return [
             'total' => [

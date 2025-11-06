@@ -17,14 +17,14 @@ class FeedbackResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'user' => $this->whenLoaded('user', function () {
+            'user' =>$this->user ? $this->whenLoaded('user', function () {
                 return [
                     'id' => $this->user->id,
-                    'name' => $this->user->fname . ' ' . $this->user->lname,
-                    'email' => $this->user->email,
-                    'type' => $this->user->type,
-                ];
-            }),
+                        'name' => $this->user->fname . ' ' . $this->user->lname,
+                        'email' => $this->user->email,
+                        'type' => $this->user->type,
+                    ];
+                }) : 'deleted user',
             'comment' => $this->comment,
             'rating' => (int)$this->rating,
             'rating_type' => $this->rating_type,

@@ -36,6 +36,11 @@ Route::post('login', [AuthController::class, 'login'])->name('login');
 Route::post('auth/requestEmailOtp', [AuthController::class, 'requestEmailOtp']);
 Route::post('auth/verify-email-otp', [AuthController::class, 'verifyEmailOtp']);
 
+
+// feedback routes
+Route::get('feedbacks', [FeedbackController::class, 'index']);
+Route::get('feedbacks/{id}', [FeedbackController::class, 'show']);
+
 // Social Auth routes
 
 Route::prefix('auth')->group(function () {
@@ -48,6 +53,7 @@ Route::prefix('auth')->group(function () {
     Route::post('refresh', [AuthController::class, 'refresh']);
     
 });
+
 
 // City and major routes
 Route::get('cities', [CityController::class, 'index']);
@@ -109,7 +115,10 @@ Route::middleware('auth:api')->group(function () {
     });
 
     // feedback routes
-    Route::resource('feedbacks', FeedbackController::class);
+    
+    Route::post('feedbacks', [FeedbackController::class, 'store']);
+    Route::put('feedbacks/{id}', [FeedbackController::class, 'update']);
+    Route::delete('feedbacks/{id}', [FeedbackController::class, 'destroy']);
 
     // alert routes
     Route::resource('alerts', AlertController::class);
