@@ -25,8 +25,6 @@ class CandidateController extends Controller
 
     public function index(Request $request)
     {
-        $candidates = User::with(['city', 'major', 'skills', 'experiences', 'education'])->where(['type'=> 'candidate', 'is_active'=> true]);
-       
         $request->validate([
             'search' => 'nullable|string',
             'city_id' => 'nullable|exists:cities,id',
@@ -36,52 +34,51 @@ class CandidateController extends Controller
             'total_years_from' => 'nullable|integer',
             'total_years_to' => 'nullable|integer',
         ]);
+
+        $query = User::query();
+        $query->with(['city', 'major', 'skills', 'experiences', 'education'])->where(['type'=> 'candidate', 'is_active'=> true]);
+       
         if(isset($request->search)) {
-            $candidates = $candidates->where('fname', 'like', '%'.$request->search.'%')
-            ->orWhere('lname', 'like', '%'.$request->search.'%')
+            $query->where('fname', 'like', '%'.$request->search.'%')->orWhere('lname', 'like', '%'.$request->search.'%')
             ->orWhere('email', 'like', '%'.$request->search.'%')
             ->orWhere('phone', 'like', '%'.$request->search.'%')
-
             ->orWhereHas('major', function ($query) use ($request) {
                 $query->where('name_en', 'like', '%'.$request->search.'%')
                       ->orWhere('name_ar', 'like', '%'.$request->search.'%');
             })
-            
             ->orWhereHas('experiences', function ($query) use ($request) {
                 $query->where('position', 'like', '%'.$request->search.'%')
                       ->orWhere('company_name', 'like', '%'.$request->search.'%')
                     ->orWhereHas('skills', function ($query) use ($request) {
-                        $query->where('name_en', 'like', '%'.$request->search.'%')
-                              ->orWhere('name_ar', 'like', '%'.$request->search.'%');
+                        $query->where('name', 'like', '%'.$request->search.'%');
                     });
             })
             ->orWhereHas('education', function ($query) use ($request) {
                 $query->where('degree', 'like', '%'.$request->search.'%')
                       ->orWhere('university', 'like', '%'.$request->search.'%')
                       ->orWhereHas('skills', function ($query) use ($request) {
-                        $query->where('name_en', 'like', '%'.$request->search.'%')
-                              ->orWhere('name_ar', 'like', '%'.$request->search.'%');
+                        $query->where('name', 'like', '%'.$request->search.'%');
                     });
             });
         }
 
         if(isset($request->city_id)) {
-            $candidates = $candidates->where('city_id', $request->city_id);
+            $query->where('city_id', $request->city_id);
         }
 
         if(isset($request->major_id)) {
-            $candidates = $candidates->where('major_id', $request->major_id);
+            $query->where('major_id', $request->major_id);
         }
 
         if(isset($request->sub_major_ids)) {
-            $candidates = $candidates->whereIn('sub_major_id', $request->sub_major_ids);
+            $query->whereIn('sub_major_id', $request->sub_major_ids);
         }
 
         // years of experience
         if(isset($request->total_years_from) && isset($request->total_years_to)) {     
-            $candidates = $candidates->whereBetween('total_period', [$request->total_years_from, $request->total_years_to]);
+            $query->whereBetween('total_period', [$request->total_years_from, $request->total_years_to]);
         }
-        $candidates = $candidates->paginate(10);
+        $candidates = $query->paginate(10);
 
 
         return LocalizationHelper::successResponse(
@@ -200,16 +197,14 @@ class CandidateController extends Controller
                     $query->where('position', 'like', '%'.$request->search.'%')
                             ->orWhere('company_name', 'like', '%'.$request->search.'%')
                         ->orWhereHas('skills', function ($query) use ($request) {
-                            $query->where('name_en', 'like', '%'.$request->search.'%')
-                                    ->orWhere('name_ar', 'like', '%'.$request->search.'%');
+                            $query->where('name', 'like', '%'.$request->search.'%');
                         });
                 })
                 ->orWhereHas('education', function ($query) use ($request) {
                     $query->where('degree', 'like', '%'.$request->search.'%')
                             ->orWhere('university', 'like', '%'.$request->search.'%')
                             ->orWhereHas('skills', function ($query) use ($request) {
-                            $query->where('name_en', 'like', '%'.$request->search.'%')
-                                    ->orWhere('name_ar', 'like', '%'.$request->search.'%');
+                            $query->where('name', 'like', '%'.$request->search.'%');
                         });
                 });
             }

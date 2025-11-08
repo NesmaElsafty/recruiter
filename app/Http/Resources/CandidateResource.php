@@ -18,31 +18,28 @@ class CandidateResource extends JsonResource
     public function toArray(Request $request): array
     {
         $locale = app()->getLocale();
-        $majorName = $this->major_name ?? $this->major?->{"name_{$locale}"} ?? $this->major?->name_en;
-        $subMajorName = $this->sub_major_name ?? $this->sub_major?->{"name_{$locale}"} ?? $this->sub_major?->name_en;
-        $cityName = $this->city_name ?? $this->city?->{"name_{$locale}"} ?? $this->city?->name_en;
-        $user = auth('api')->user();
+        
         $isFavorite = false;
+        $user = auth('api')->user();
         if($user){
             $isFavorite = $this->favoriteCandidates()->where('recruiter_id', $user->id)->exists();
         }
+
         return [
             'id' => $this->id,
             'fname' => $this->fname,
             'lname' => $this->lname,
             'major' => [
-                'id' => $this->major->id,
-                'name' => $majorName,
-                'name_ar' => $this->major?->name_ar,
+                'id' => $this->major?->id,
+                'name' => $this->major?->{"name_{$locale}"} ?? $this->major?->name_en,
             ],
-            'sub_major' => [
-                'id' => $this->sub_major->id,
-                'name' => $subMajorName,
-            ],
+            'sub_major' => $this->sub_major ? [
+                'id' => $this->sub_major?->id,
+                'name' => $this->sub_major?->{"name_{$locale}"} ?? $this->sub_major?->name_en,
+            ] : null,
             'city' => [
-                'id' => $this->city->id,
-                'name' => $this->city->name_en,
-                'name_ar' => $this->city?->name_ar,
+                'id' => $this->city?->id,
+                'name' => $this->city?->{"name_{$locale}"} ?? $this->city?->name_en,
             ],
 
             'experiences' => ExperienceResource::collection($this->experiences),
