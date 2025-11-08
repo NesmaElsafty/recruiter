@@ -27,7 +27,15 @@ class CandidateController extends Controller
     {
         $candidates = User::with(['city', 'major', 'skills', 'experiences', 'education'])->where(['type'=> 'candidate', 'is_active'=> true]);
        
-
+        $request->validate([
+            'search' => 'nullable|string',
+            'city_id' => 'nullable|exists:cities,id',
+            'major_id' => 'nullable|exists:majors,id',
+            'sub_major_ids' => 'array|nullable',
+            'sub_major_ids.*' => 'nullable|exists:sub_majors,id',
+            'total_years_from' => 'nullable|integer',
+            'total_years_to' => 'nullable|integer',
+        ]);
         if(isset($request->search)) {
             $candidates = $candidates->where('fname', 'like', '%'.$request->search.'%')
             ->orWhere('lname', 'like', '%'.$request->search.'%')
@@ -38,6 +46,7 @@ class CandidateController extends Controller
                 $query->where('name_en', 'like', '%'.$request->search.'%')
                       ->orWhere('name_ar', 'like', '%'.$request->search.'%');
             })
+            
             ->orWhereHas('experiences', function ($query) use ($request) {
                 $query->where('position', 'like', '%'.$request->search.'%')
                       ->orWhere('company_name', 'like', '%'.$request->search.'%')
@@ -64,8 +73,8 @@ class CandidateController extends Controller
             $candidates = $candidates->where('major_id', $request->major_id);
         }
 
-        if(isset($request->sub_major_id)) {
-            $candidates = $candidates->where('sub_major_id', $request->sub_major_id);
+        if(isset($request->sub_major_ids)) {
+            $candidates = $candidates->whereIn('sub_major_id', $request->sub_major_ids);
         }
 
         // years of experience
