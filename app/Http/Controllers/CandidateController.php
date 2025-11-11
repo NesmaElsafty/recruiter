@@ -94,8 +94,20 @@ class CandidateController extends Controller
     public function show(Request $request)
     {
         try{
-        $candidate = User::where(['type'=> 'candidate', 'is_active'=> true])->find($request->id);
-        $candidate->load(['city', 'major', 'skills', 'experiences', 'education']);
+        $candidate = User::find($request->id);
+
+        $similarCandidates = User::where(['type'=> 'candidate', 'is_active'=> true])->where('id', '!=', $candidate->id)
+            ->where(function ($query) use ($candidate) {
+                $query->where('major_id', $candidate->major_id)
+                    ->orWhere('sub_major_id', $candidate->sub_major_id)
+                    ->orWhereHas('skills', function ($query) use ($candidate) {
+                        $query->whereIn('name', $candidate->skills->pluck('name'));
+                    });
+            })
+            ->take(10)
+            ->get();
+
+        $similarCandidates = CandidateResource::collection($similarCandidates);
         if(!$candidate) {
             return LocalizationHelper::errorResponse(
                 'candidate_not_found',
@@ -106,7 +118,10 @@ class CandidateController extends Controller
         return LocalizationHelper::successResponse(
             'candidate_retrieved_successfully',
             new CandidateResource($candidate),
-            200
+            200,
+            [
+                'similar_candidates' => $similarCandidates,
+            ]
         );
         }catch(Exception $e){
             return LocalizationHelper::errorResponse(
