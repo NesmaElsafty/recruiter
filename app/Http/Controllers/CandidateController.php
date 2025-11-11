@@ -105,7 +105,7 @@ class CandidateController extends Controller
         }
         return LocalizationHelper::successResponse(
             'candidate_retrieved_successfully',
-            new UserResource($candidate),
+            new CandidateResource($candidate),
             200
         );
         }catch(Exception $e){
@@ -182,58 +182,45 @@ class CandidateController extends Controller
     public function getFavorites(Request $request)
     {
         try{
+            // get current favorites
+            $favorites = Favorite::where('recruiter_id', auth('api')->user()->id)->get();
 
+            $query = User::query();
+            $query->with(['city', 'major', 'skills', 'experiences', 'education'])->where(['type'=> 'candidate', 'is_active'=> true]);
+            $query->whereIn('id', $favorites->pluck('candidate_id'));
             if(isset($request->search)) {
-                $candidates = $candidates->where('fname', 'like', '%'.$request->search.'%')
+                $query->where('fname', 'like', '%'.$request->search.'%')
                 ->orWhere('lname', 'like', '%'.$request->search.'%')
                 ->orWhere('email', 'like', '%'.$request->search.'%')
-                ->orWhere('phone', 'like', '%'.$request->search.'%')
-
-                ->orWhereHas('major', function ($query) use ($request) {
-                    $query->where('name_en', 'like', '%'.$request->search.'%')
-                            ->orWhere('name_ar', 'like', '%'.$request->search.'%');
-                })
-                ->orWhereHas('experiences', function ($query) use ($request) {
-                    $query->where('position', 'like', '%'.$request->search.'%')
-                            ->orWhere('company_name', 'like', '%'.$request->search.'%')
-                        ->orWhereHas('skills', function ($query) use ($request) {
-                            $query->where('name', 'like', '%'.$request->search.'%');
-                        });
-                })
-                ->orWhereHas('education', function ($query) use ($request) {
-                    $query->where('degree', 'like', '%'.$request->search.'%')
-                            ->orWhere('university', 'like', '%'.$request->search.'%')
-                            ->orWhereHas('skills', function ($query) use ($request) {
-                            $query->where('name', 'like', '%'.$request->search.'%');
-                        });
-                });
+                ->orWhere('phone', 'like', '%'.$request->search.'%');
             }
 
-            if(isset($request->city_id)) {
-                $candidates = $candidates->where('city_id', $request->city_id);
+            if(isset($request->city_id) && $request->city_id != 'all') {
+                $query->where('city_id', $request->city_id);
             }
 
-            if(isset($request->major_id)) {
-                $candidates = $candidates->where('major_id', $request->major_id);
+            if(isset($request->major_id) && $request->major_id != 'all') {
+                $query->where('major_id', $request->major_id);
             }
-
-            if(isset($request->sub_major_id)) {
-                $candidates = $candidates->where('sub_major_id', $request->sub_major_id);
+            
+            if(isset($request->sub_major_id) && $request->sub_major_id != 'all') {
+                $query->where('sub_major_id', $request->sub_major_id);
             }
 
             // years of experience
-            if(isset($request->total_years_from) && isset($request->total_years_to)) {     
-                $candidates = $candidates->whereBetween('total_period', [$request->total_years_from, $request->total_years_to]);
+            if(isset($request->total_years_from) && isset($request->total_years_to) && $request->total_years_from != 'all' && $request->total_years_to != 'all') {     
+                $query->whereBetween('total_period', [$request->total_years_from, $request->total_years_to]);
             }
             
-        $recruiter = auth('api')->user();
-        $favorites = Favorite::where('recruiter_id', $recruiter->id)->with('candidate')->get();
-        // get candidates
-        $candidates = User::whereIn('id', $favorites->pluck('candidate_id'))->get();
+            $candidates = $query->paginate(10);
+            
         return LocalizationHelper::successResponse(
             'favorites_retrieved_successfully',
             CandidateResource::collection($candidates),
-            200
+            200,
+            [
+                'pagination' => PaginationHelper::paginate($candidates),
+            ]
         );
         }catch(Exception $e){
             return LocalizationHelper::errorResponse(
