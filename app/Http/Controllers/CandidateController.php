@@ -78,7 +78,7 @@ class CandidateController extends Controller
         if(isset($request->total_years_from) && isset($request->total_years_to)) {     
             $query->whereBetween('total_period', [$request->total_years_from, $request->total_years_to]);
         }
-        $candidates = $query->paginate(10);
+        $candidates = $query->paginate(5);
 
 
         return LocalizationHelper::successResponse(
@@ -227,7 +227,7 @@ class CandidateController extends Controller
                 $query->whereBetween('total_period', [$request->total_years_from, $request->total_years_to]);
             }
             
-            $candidates = $query->paginate(10);
+            $candidates = $query->paginate(5);
             
         return LocalizationHelper::successResponse(
             'favorites_retrieved_successfully',

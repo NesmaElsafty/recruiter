@@ -426,6 +426,7 @@ class UserService
         $user->job_title = $data['job_title'] ?? $user->job_title;
         $user->major_id = $data['major_id'] ?? $user->major_id;
         $user->city_id = $data['city_id'] ?? $user->city_id;
+        $user->degree = $data['degree'] ?? $user->degree;
         $user->save();
         return $user;
     }

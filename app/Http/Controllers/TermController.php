@@ -28,7 +28,7 @@ class TermController extends Controller
     {
         try {
             $request->validate([
-                'type' => 'required|array|in:terms,privacy_policy,faq',
+                'type' => 'required|string|in:terms,privacy_policy,faq',
                 'user_type' => 'required|string|in:candidate,recruiter,all',
             ]);
             

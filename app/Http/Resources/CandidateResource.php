@@ -29,6 +29,10 @@ class CandidateResource extends JsonResource
             'id' => $this->id,
             'fname' => $this->fname,
             'lname' => $this->lname,
+            'email' => $this->email,
+            'phone' => $this->phone,
+            'image' => $this->getFirstMediaUrl('avatar'),
+            'resume' => $this->getFirstMediaUrl('resume'),                
             'major' => [
                 'id' => $this->major?->id,
                 'name' => $this->major?->{"name_{$locale}"} ?? $this->major?->name_en,
