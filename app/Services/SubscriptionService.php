@@ -72,16 +72,18 @@ class SubscriptionService
     {
         $user = auth('api')->user();
         $query = Subscription::query();
-        $query->where('user_id', $user->id)->where('status', '!=', 'active')->orderBy('created_at', 'desc');
+        $query->where('user_id', $user->id)->where('status', '!=', 'active');
 
         if(isset($data['search']) && !empty($data['search'])) {
-            $query->where('subscription_id', 'like', "%{$data['search']}%")
-            ->orWhere('paid_amount', 'like', "%{$data['search']}%")
-            ->orWhere('start_date', 'like', "%{$data['search']}%")
-            ->orWhere('end_date', 'like', "%{$data['search']}%")
-            ->orWhereHas('plan', function ($planQuery) use ($data) {
-                $planQuery->where('name_en', 'like', "%{$data['search']}%")
-                         ->orWhere('name_ar', 'like', "%{$data['search']}%");
+            $query->where(function($q) use ($data, $user) {
+                $q->where('subscription_id', 'like', "%{$data['search']}%")
+                  ->orWhere('paid_amount', 'like', "%{$data['search']}%")
+                  ->orWhere('start_date', 'like', "%{$data['search']}%")
+                  ->orWhere('end_date', 'like', "%{$data['search']}%")
+                  ->orWhereHas('plan', function ($planQuery) use ($data) {
+                      $planQuery->where('name_en', 'like', "%{$data['search']}%")
+                               ->orWhere('name_ar', 'like', "%{$data['search']}%");
+                  });
             });
         }
         
